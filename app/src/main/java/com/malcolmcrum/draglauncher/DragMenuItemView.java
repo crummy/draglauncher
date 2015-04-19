@@ -51,6 +51,8 @@ public class DragMenuItemView extends View {
     }
 
     public void pressed() {
+        size *= 2;
+        invalidate();
         if (north != null) north.show();
         if (east != null) east.show();
         if (south != null) south.show();
@@ -58,6 +60,8 @@ public class DragMenuItemView extends View {
     }
 
     public void released() {
+        size *= 0.5;
+        invalidate();
         if (north != null) north.hide();
         if (east != null) east.hide();
         if (south != null) south.hide();

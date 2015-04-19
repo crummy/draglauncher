@@ -14,7 +14,7 @@ import android.content.Context;
 import android.widget.RelativeLayout;
 
 
-public class DragLauncher extends Activity {
+public class DragLauncher extends Activity implements View.OnTouchListener {
 
     DragMenu menu;
     RelativeLayout layout;
@@ -33,12 +33,25 @@ public class DragLauncher extends Activity {
         drawMenu(menu.getRoot(), null, null);
     }
 
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN && v instanceof DragMenuItemView) {
+            ((DragMenuItemView) v).pressed();
+            return true;
+        } else if (event.getAction() == MotionEvent.ACTION_UP && v instanceof DragMenuItemView) {
+            ((DragMenuItemView) v).released();
+            return true;
+        }
+        return false;
+    }
+
     private DragMenuItemView drawMenu(DragMenu.Item item, DragMenu.Item parent, DragMenuItemView parentsView) {
         DragMenuItemView view = new DragMenuItemView(this, item);
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(view.getSize(), view.getSize());
         int margin = view.getSpacing();
         params.setMargins(margin, margin, margin, margin);
         view.hide();
+        view.setOnTouchListener(this);
 
         // draw cell, in relation to parent
         if (parent == null) {
@@ -63,19 +76,7 @@ public class DragLauncher extends Activity {
             view.setBackgroundColor(Color.MAGENTA);
         }
 
-        view.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN && v instanceof DragMenuItemView) {
-                    ((DragMenuItemView)v).pressed();
-                    return true;
-                } else if (event.getAction() == MotionEvent.ACTION_CANCEL && v instanceof DragMenuItemView) {
-                    ((DragMenuItemView)v).released();
-                    return true;
-                }
-                return false;
-            }
-        });
+
 
         if (item.north != null) view.north = drawMenu(item.north, item, view);
         if (item.east != null) view.east = drawMenu(item.east, item, view);
