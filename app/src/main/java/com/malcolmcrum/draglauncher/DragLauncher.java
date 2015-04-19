@@ -35,6 +35,8 @@ public class DragLauncher extends Activity implements View.OnTouchListener {
         } else if (event.getAction() == MotionEvent.ACTION_UP && v instanceof DragMenuItemView) {
             ((DragMenuItemView) v).released();
             return true;
+        } else if (event.getAction() == MotionEvent.ACTION_MOVE && v instanceof DragMenuItemView) {
+
         }
         return false;
     }
@@ -69,8 +71,6 @@ public class DragLauncher extends Activity implements View.OnTouchListener {
             params.addRule(RelativeLayout.CENTER_VERTICAL);
             view.setBackgroundColor(Color.MAGENTA);
         }
-
-
 
         if (item.north != null) view.north = drawMenu(item.north, item, view);
         if (item.east != null) view.east = drawMenu(item.east, item, view);
