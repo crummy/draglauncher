@@ -1,16 +1,10 @@
 package com.malcolmcrum.draglauncher;
 
 import android.app.Activity;
-import android.opengl.Visibility;
 import android.os.Bundle;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Point;
-import android.graphics.Rect;
 import android.view.MotionEvent;
 import android.view.View;
-import android.content.Context;
 import android.widget.RelativeLayout;
 
 
