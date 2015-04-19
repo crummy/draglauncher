@@ -42,6 +42,28 @@ public class DragMenuItemView extends View {
         return spacing;
     }
 
+    public void hide() {
+        setVisibility(View.INVISIBLE);
+    }
+
+    public void show() {
+        this.setVisibility(View.VISIBLE);
+    }
+
+    public void pressed() {
+        if (north != null) north.show();
+        if (east != null) east.show();
+        if (south != null) south.show();
+        if (west != null) west.show();
+    }
+
+    public void released() {
+        if (north != null) north.hide();
+        if (east != null) east.hide();
+        if (south != null) south.hide();
+        if (west != null) west.hide();
+    }
+
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);

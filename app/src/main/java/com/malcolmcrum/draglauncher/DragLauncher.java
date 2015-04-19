@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.view.MotionEvent;
 import android.view.View;
 import android.content.Context;
 import android.widget.RelativeLayout;
@@ -37,13 +38,13 @@ public class DragLauncher extends Activity {
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(view.getSize(), view.getSize());
         int margin = view.getSpacing();
         params.setMargins(margin, margin, margin, margin);
-        view.setVisibility(View.GONE);
+        view.hide();
 
         // draw cell, in relation to parent
         if (parent == null) {
             params.addRule(RelativeLayout.CENTER_IN_PARENT);
             view.setBackgroundColor(Color.BLUE);
-            view.setVisibility(View.VISIBLE);
+            view.show();
         } else if (parent.north == item) {
             params.addRule(RelativeLayout.ABOVE, parentsView.getId());
             params.addRule(RelativeLayout.CENTER_HORIZONTAL);
@@ -61,6 +62,20 @@ public class DragLauncher extends Activity {
             params.addRule(RelativeLayout.CENTER_VERTICAL);
             view.setBackgroundColor(Color.MAGENTA);
         }
+
+        view.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN && v instanceof DragMenuItemView) {
+                    ((DragMenuItemView)v).pressed();
+                    return true;
+                } else if (event.getAction() == MotionEvent.ACTION_CANCEL && v instanceof DragMenuItemView) {
+                    ((DragMenuItemView)v).released();
+                    return true;
+                }
+                return false;
+            }
+        });
 
         if (item.north != null) view.north = drawMenu(item.north, item, view);
         if (item.east != null) view.east = drawMenu(item.east, item, view);
