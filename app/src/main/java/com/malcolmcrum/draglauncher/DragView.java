@@ -5,6 +5,9 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.graphics.Rect;
+import android.support.annotation.NonNull;
+import android.view.MotionEvent;
 import android.view.View;
 
 /**
@@ -13,11 +16,6 @@ import android.view.View;
  */
 public class DragView extends View {
 
-    private int itemSize = 128;
-    private int itemSpacing = 256;
-
-    private Paint squarePaint = new Paint();
-    private Paint textPaint = new Paint();
     private Point center;
     private DragMenuItem menu;
 
@@ -28,13 +26,7 @@ public class DragView extends View {
     public DragView(Context context, DragMenuItem menuRoot) {
         super(context);
         menu = menuRoot;
-        squarePaint.setColor(Color.BLUE);
-        textPaint.setColor(Color.BLACK);
-        textPaint.setTextAlign(Paint.Align.CENTER);
-        textPaint.setTextSize(72);
-
-
-    }
+}
 
     @Override
     public void onDraw(Canvas canvas) {
@@ -45,10 +37,45 @@ public class DragView extends View {
         drawItem(canvas, center.x, center.y, menu);
     }
 
-    private void drawItem(Canvas canvas, int x, int y, DragMenuItem item) {
-        canvas.drawRect(x - itemSize / 2, y - itemSize / 2, x + itemSize / 2, y + itemSize / 2, squarePaint);
-        canvas.drawText(item.label, x, y, textPaint);
+    @Override
+    public boolean onTouchEvent(@NonNull MotionEvent event) {
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                DragMenuItem selectedItem = itemAtCoords(event.getX(), event.getY(), menu);
+                if (selectedItem != null) {
+                    selectedItem.select();
+                    invalidate();
+                }
+                break;
+            case MotionEvent.ACTION_UP:
+                menu.deselect();
+                invalidate();
+                break;
+        }
+        return true;
+    }
 
-        if (item.north != null) drawItem(canvas, x, y - itemSpacing, item.north);
+    private DragMenuItem itemAtCoords(float x, float y, DragMenuItem root) {
+        if (rectContainsPoint(root.area, x, y)) {
+            return root;
+        }
+        else {
+            return null;
+        }
+    }
+
+    private boolean rectContainsPoint(Rect rect, float x, float y) {
+        return (x > rect.left) && (x < rect.right) && (y > rect.top) && (y < rect.bottom);
+    }
+
+    private void drawItem(Canvas canvas, int x, int y, DragMenuItem item) {
+        item.area = new Rect(x - item.getSize() / 2, y - item.getSize() / 2, x + item.getSize() / 2, y + item.getSize() / 2);
+        canvas.drawRect(item.area, item.getBackgroundPaint());
+        canvas.drawText(item.label, x, y, item.getTextPaint());
+
+        if (item.north != null) drawItem(canvas, x, y - item.getSpacing(), item.north);
+        if (item.east != null) drawItem(canvas, x + item.getSpacing(), y, item.east);
+        if (item.south != null) drawItem(canvas, x, y + item.getSpacing(), item.south);
+        if (item.west != null) drawItem(canvas, x - item.getSpacing(), y, item.west);
     }
 }
