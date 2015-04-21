@@ -1,7 +1,6 @@
 package com.malcolmcrum.draglauncher;
 
 import android.app.Activity;
-import android.app.DialogFragment;
 import android.os.Bundle;
 import android.graphics.Color;
 
@@ -18,7 +17,7 @@ public class DragLauncher extends Activity {
         initializeDefaultMenu();
 
         dragView = new DragView(this, menuRoot);
-        dragView.setBackgroundColor(Color.LTGRAY);
+        //dragView.setBackgroundColor(Color.LTGRAY);
         setContentView(dragView);
     }
 

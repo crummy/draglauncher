@@ -34,13 +34,17 @@ public class DragMenuItem {
     private boolean root;
 
     private static final Paint textPaint = new Paint();
-    private static final Paint backgroundPaint = new Paint();
+    private static final Paint paintNotSelected = new Paint();
+    private static final Paint paintSelected = new Paint();
+    private static final Paint paintWasSelected = new Paint();
     private static final int sizeDeselected = 128;
     private static final int sizeSelected = 196;
     private static final int spacing = 256;
 
     static {
-        backgroundPaint.setColor(Color.BLUE);
+        paintSelected.setColor(Color.BLUE);
+        paintNotSelected.setColor(Color.MAGENTA);
+        paintWasSelected.setColor(Color.GRAY);
         textPaint.setColor(Color.BLACK);
         textPaint.setTextAlign(Paint.Align.CENTER);
         textPaint.setTextSize(72);
@@ -75,6 +79,10 @@ public class DragMenuItem {
         return selected == SelectedState.isSelected;
     }
 
+    public boolean wasSelected() {
+        return selected == SelectedState.wasSelected;
+    }
+
     public boolean isVisible() {
         if (root) return true;
         else if (parent != null && parent.isSelected()) return true; // TODO: simplify this?
@@ -103,7 +111,9 @@ public class DragMenuItem {
     }
 
     public Paint getBackgroundPaint() {
-        return backgroundPaint;
+        if (isSelected()) return paintSelected;
+        else if (wasSelected()) return paintWasSelected;
+        else return paintNotSelected;
     }
 
     public int getSize() {
