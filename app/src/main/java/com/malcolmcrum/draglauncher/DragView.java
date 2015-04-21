@@ -67,7 +67,7 @@ public class DragView extends View {
         // Maybe put collision detection code into DragMenuItemView equivalent?
         if (root == null) {
             return null;
-        } else if (rectContainsPoint(root.getRectForTouching(), x, y)) {
+        } else if (root.isVisible() && rectContainsPoint(root.getRectForTouching(), x, y)) {
             return root;
         } else if (root.isVisible()) {
             DragMenuItem north = itemAtCoords(x, y, root.getNorth());

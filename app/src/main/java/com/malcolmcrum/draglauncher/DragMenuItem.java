@@ -76,7 +76,8 @@ public class DragMenuItem {
     }
 
     public boolean isVisible() {
-        if (parent != null && parent.isSelected()) return true;
+        if (root) return true;
+        else if (parent != null && parent.isSelected()) return true; // TODO: simplify this?
         else return selected != SelectedState.notSelected;
     }
 
