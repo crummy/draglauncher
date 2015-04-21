@@ -2,7 +2,6 @@ package com.malcolmcrum.draglauncher;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.graphics.Color;
 
 
 public class DragLauncher extends Activity {
