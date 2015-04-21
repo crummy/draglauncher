@@ -17,7 +17,6 @@ public class DragLauncher extends Activity {
         initializeDefaultMenu();
 
         dragView = new DragView(this, menuRoot);
-        //dragView.setBackgroundColor(Color.LTGRAY);
         setContentView(dragView);
     }
 

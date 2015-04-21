@@ -1,5 +1,6 @@
 package com.malcolmcrum.draglauncher;
 
+import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -70,6 +71,11 @@ public class DragView extends View {
     }
 
     private void itemChosen(DragMenuItem item) {
+        if (item == menu.getSouth()) {
+            Activity activity = (Activity)getContext();
+            activity.finish();
+        }
+
         Context context = getContext();
         CharSequence text = "You selected an item: " + item.label;
         int duration = Toast.LENGTH_SHORT;
