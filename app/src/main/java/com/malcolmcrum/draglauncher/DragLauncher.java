@@ -24,12 +24,12 @@ public class DragLauncher extends Activity {
     private void initializeDefaultMenu() {
         menuRoot = new DragMenuItem(true);
         menuRoot.label = ":)";
-        menuRoot.north = new DragMenuItem();
-        menuRoot.north.north = new DragMenuItem();
-        menuRoot.east = new DragMenuItem();
-        menuRoot.south = new DragMenuItem();
-        menuRoot.south.label = "!";
-        menuRoot.west = new DragMenuItem();
+        menuRoot.setNorth(new DragMenuItem());
+        menuRoot.getNorth().setNorth(new DragMenuItem());
+        menuRoot.setEast(new DragMenuItem());
+        menuRoot.setSouth(new DragMenuItem());
+        menuRoot.getSouth().label = "!";
+        menuRoot.setWest(new DragMenuItem());
     }
 
 }

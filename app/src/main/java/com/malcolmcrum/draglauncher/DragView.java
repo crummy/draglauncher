@@ -2,19 +2,18 @@ package com.malcolmcrum.draglauncher;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Point;
 import android.graphics.Rect;
 import android.support.annotation.NonNull;
 import android.view.MotionEvent;
 import android.view.View;
 
 /**
- * Canvas for drawing launcher
+ * Canvas for drawing launcher. Handles input, too.
+ *
  * Created by Malcolm on 4/19/2015.
  */
 public class DragView extends View {
 
-    private Point center;
     private DragMenuItem menu;
 
     public DragView(Context context) {
@@ -32,17 +31,8 @@ public class DragView extends View {
             int width = right - left;
             int height = bottom - top;
 
-            layoutMenuItem(menu, width/2, height/2);
+            menu.layout(width/2, height/2);
         }
-    }
-
-    private void layoutMenuItem(DragMenuItem item, int x, int y) {
-        item.area = new Rect(x - item.getSize() / 2, y - item.getSize() / 2, x + item.getSize() / 2, y + item.getSize() / 2);
-
-        if (item.north != null) layoutMenuItem(item.north, x, y - item.getSpacing());
-        if (item.east != null) layoutMenuItem(item.east, x + item.getSpacing(), y);
-        if (item.south != null) layoutMenuItem(item.south, x, y + item.getSpacing());
-        if (item.west != null) layoutMenuItem(item.west, x - item.getSpacing(), y);
     }
 
     @Override
@@ -57,6 +47,7 @@ public class DragView extends View {
             case MotionEvent.ACTION_MOVE:
                 DragMenuItem selectedItem = itemAtCoords(event.getX(), event.getY(), menu);
                 if (selectedItem != null) {
+                    selectedItem.deselectChildren();
                     selectedItem.select();
                     invalidate();
                 }
@@ -73,15 +64,16 @@ public class DragView extends View {
     private DragMenuItem itemAtCoords(float x, float y, DragMenuItem root) {
         // Not my finest work.
         // TODO: Combine this and probably rectContainsPoint into a nicer recursive function.
+        // Maybe put collision detection code into DragMenuItemView equivalent?
         if (root == null) {
             return null;
-        } else if (rectContainsPoint(root.area, x, y)) {
+        } else if (rectContainsPoint(root.getRectForTouching(), x, y)) {
             return root;
-        } else if (root.isSelected()) {
-            DragMenuItem north = itemAtCoords(x, y, root.north);
-            DragMenuItem east = itemAtCoords(x, y, root.east);
-            DragMenuItem south = itemAtCoords(x, y, root.south);
-            DragMenuItem west = itemAtCoords(x, y, root.west);
+        } else if (root.isVisible()) {
+            DragMenuItem north = itemAtCoords(x, y, root.getNorth());
+            DragMenuItem east = itemAtCoords(x, y, root.getEast());
+            DragMenuItem south = itemAtCoords(x, y, root.getSouth());
+            DragMenuItem west = itemAtCoords(x, y, root.getWest());
             if (north != null) return north;
             if (east != null) return east;
             if (south != null) return south;
@@ -96,14 +88,13 @@ public class DragView extends View {
     }
 
     private void drawItem(Canvas canvas, DragMenuItem item) {
-        canvas.drawRect(item.area, item.getBackgroundPaint());
+        if (item == null) return;
+        canvas.drawRect(item.getRectForDrawing(), item.getBackgroundPaint());
         //canvas.drawText(item.label, item.getTextPaint());
 
-        if (item.isSelected()) {
-            if (item.north != null) drawItem(canvas, item.north);
-            if (item.east != null) drawItem(canvas, item.east);
-            if (item.south != null) drawItem(canvas, item.south);
-            if (item.west != null) drawItem(canvas, item.west);
-        }
+        if (item.getNorth() != null && item.getNorth().isVisible()) drawItem(canvas, item.getNorth());
+        if (item.getEast() != null && item.getEast().isVisible()) drawItem(canvas, item.getEast());
+        if (item.getSouth() != null && item.getSouth().isVisible()) drawItem(canvas, item.getSouth());
+        if (item.getWest() != null && item.getWest().isVisible()) drawItem(canvas, item.getWest());
     }
 }
