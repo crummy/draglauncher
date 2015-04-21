@@ -1,6 +1,7 @@
 package com.malcolmcrum.draglauncher;
 
 import android.app.Activity;
+import android.app.DialogFragment;
 import android.os.Bundle;
 import android.graphics.Color;
 
@@ -26,6 +27,9 @@ public class DragLauncher extends Activity {
         menuRoot.label = ":)";
         menuRoot.setNorth(new DragMenuItem());
         menuRoot.getNorth().setNorth(new DragMenuItem());
+        menuRoot.getNorth().setWest(new DragMenuItem());
+        menuRoot.getNorth().getWest().setNorth(new DragMenuItem());
+        menuRoot.getNorth().getWest().setSouth(new DragMenuItem());
         menuRoot.setEast(new DragMenuItem());
         menuRoot.setSouth(new DragMenuItem());
         menuRoot.getSouth().label = "!";

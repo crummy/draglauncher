@@ -1,11 +1,14 @@
 package com.malcolmcrum.draglauncher;
 
+import android.app.DialogFragment;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Toast;
 
 /**
  * Canvas for drawing launcher. Handles input, too.
@@ -15,6 +18,7 @@ import android.view.View;
 public class DragView extends View {
 
     private DragMenuItem menu;
+    private DragMenuItem lastSelectedItem;
 
     public DragView(Context context) {
         this(context, null);
@@ -47,18 +51,31 @@ public class DragView extends View {
             case MotionEvent.ACTION_MOVE:
                 DragMenuItem selectedItem = itemAtCoords(event.getX(), event.getY(), menu);
                 if (selectedItem != null) {
+                    lastSelectedItem = selectedItem;
                     selectedItem.deselectChildren();
                     selectedItem.select();
                     invalidate();
                 }
                 break;
             case MotionEvent.ACTION_UP:
+                if (lastSelectedItem != null && lastSelectedItem != menu) {
+                    itemChosen(lastSelectedItem);
+                }
             case MotionEvent.ACTION_CANCEL:
                 menu.deselect();
                 invalidate();
                 break;
         }
         return true;
+    }
+
+    private void itemChosen(DragMenuItem item) {
+        Context context = getContext();
+        CharSequence text = "You selected an item: " + item.label;
+        int duration = Toast.LENGTH_SHORT;
+
+        Toast toast = Toast.makeText(context, text, duration);
+        toast.show();
     }
 
     private DragMenuItem itemAtCoords(float x, float y, DragMenuItem root) {
