@@ -35,7 +35,7 @@ public class DragView extends View {
             int width = right - left;
             int height = bottom - top;
 
-            menu.layout(width/2, height/2, getContext().getPackageManager());
+            menu.layout(width/2, 3*height/4, getContext().getPackageManager());
         }
     }
 

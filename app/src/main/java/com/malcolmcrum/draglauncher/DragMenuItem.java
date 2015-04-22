@@ -3,7 +3,6 @@ package com.malcolmcrum.draglauncher;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 
@@ -41,7 +40,8 @@ public class DragMenuItem {
     private static final Paint paintNotSelected = new Paint();
     private static final Paint paintSelected = new Paint();
     private static final Paint paintWasSelected = new Paint();
-    private static final int sizeDeselected = 256;
+    private static final int sizeNotSelected = 196;
+    private static final int sizeWasSelected = 256;
     private static final int sizeSelected = 256;
     private static final int spacing = 256;
 
@@ -69,7 +69,7 @@ public class DragMenuItem {
      * @param  y    y coordinate of the center of the MenuItem
      */
     public void layout(int x, int y, PackageManager pm) {
-        areaDeselected = new Rect(x - sizeDeselected/2, y - sizeDeselected/2, x + sizeDeselected/2, y + sizeDeselected/2);
+        areaDeselected = new Rect(x - sizeNotSelected /2, y - sizeNotSelected /2, x + sizeNotSelected /2, y + sizeNotSelected /2);
         areaSelected = new Rect(x - sizeSelected/2, y - sizeSelected/2, x + sizeSelected/2, y + sizeSelected/2);
         areaTouch = new Rect(x - spacing/2, y - spacing/2, x + spacing/2, y + spacing/2);
         try {
@@ -123,7 +123,7 @@ public class DragMenuItem {
     }
 
     public int getSize() {
-        return isSelected() ? sizeSelected : sizeDeselected;
+        return isSelected() ? sizeSelected : sizeNotSelected;
     }
 
     public int getSpacing() {
@@ -136,8 +136,9 @@ public class DragMenuItem {
 
     public Rect getRectForDrawing() {
         assert (areaDeselected != null && areaSelected != null) : "function called before area rects initialized";
-        if (isSelected()) return areaSelected;
-        else return areaDeselected;
+        if (isSelected() || wasSelected()) return areaSelected;
+        //else return areaDeselected;
+        else return new Rect(0,0,0,0);
     }
 
     public Rect getRectForTouching() {
