@@ -21,25 +21,25 @@ public class DragLauncher extends Activity {
 
     private void initializeDefaultMenu() {
         menuRoot = new DragMenuItem(true);
-        menuRoot.label = "GO";
+        menuRoot.packageName = "com.malcolmcrum.draglauncher";
         menuRoot.setNorth(new DragMenuItem());
-        menuRoot.getNorth().label = "WEB";
+        menuRoot.getNorth().packageName = "com.android.chrome";
         menuRoot.getNorth().setNorth(new DragMenuItem());
-        menuRoot.getNorth().getNorth().label = "CHROME";
+        menuRoot.getNorth().getNorth().packageName = "com.google.android.youtube";
         menuRoot.getNorth().setWest(new DragMenuItem());
-        menuRoot.getNorth().getWest().label = "SOCIAL";
+        menuRoot.getNorth().getWest().packageName = "com.google.android.apps.inbox";
         menuRoot.getNorth().getWest().setNorth(new DragMenuItem());
-        menuRoot.getNorth().getWest().getNorth().label = "FACE";
+        menuRoot.getNorth().getWest().getNorth().packageName = "com.facebook.katana";
         menuRoot.getNorth().getWest().setSouth(new DragMenuItem());
-        menuRoot.getNorth().getWest().getSouth().label = "TWTR";
+        menuRoot.getNorth().getWest().getSouth().packageName = "com.twitter.android";
         menuRoot.getNorth().setEast(new DragMenuItem());
-        menuRoot.getNorth().getEast().label = "H OUTS";
+        menuRoot.getNorth().getEast().packageName = "com.google.android.talk";
         menuRoot.setEast(new DragMenuItem());
-        menuRoot.getEast().label = "PHONE";
+        menuRoot.getEast().packageName = "com.google.android.music";
         menuRoot.setSouth(new DragMenuItem());
-        menuRoot.getSouth().label = "!";
+        menuRoot.getSouth().packageName = "!";
         menuRoot.setWest(new DragMenuItem());
-        menuRoot.getWest().label = "MAPS";
+        menuRoot.getWest().packageName = "com.google.android.apps.maps";
     }
 
 }

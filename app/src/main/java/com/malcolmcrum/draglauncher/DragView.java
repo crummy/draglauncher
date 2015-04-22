@@ -35,7 +35,7 @@ public class DragView extends View {
             int width = right - left;
             int height = bottom - top;
 
-            menu.layout(width/2, height/2);
+            menu.layout(width/2, height/2, getContext().getPackageManager());
         }
     }
 
@@ -76,7 +76,7 @@ public class DragView extends View {
         }
 
         Context context = getContext();
-        CharSequence text = "You selected an item: " + item.label;
+        CharSequence text = "You selected an item: " + item.packageName;
         int duration = Toast.LENGTH_SHORT;
 
         Toast toast = Toast.makeText(context, text, duration);
@@ -112,8 +112,7 @@ public class DragView extends View {
     private void drawItem(Canvas canvas, DragMenuItem item) {
         if (item == null) return;
         canvas.drawRect(item.getRectForDrawing(), item.getBackgroundPaint());
-        Point textCenter = item.getTextCenter();
-        canvas.drawText(item.label, textCenter.x, textCenter.y, item.getTextPaint());
+        if (item.getIcon() != null) item.getIcon().draw(canvas);
 
         if (item.getNorth() != null && item.getNorth().isVisible()) drawItem(canvas, item.getNorth());
         if (item.getEast() != null && item.getEast().isVisible()) drawItem(canvas, item.getEast());

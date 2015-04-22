@@ -1,9 +1,11 @@
 package com.malcolmcrum.draglauncher;
 
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 
 /**
  * Menu object
@@ -19,12 +21,12 @@ public class DragMenuItem {
     // In other words, parent should not point to the same object as east, west, north, or south.
     private DragMenuItem parent = null;
 
-    public String label = "?!";
+    public String packageName = "com.malcolmcrum.draglauncher";
 
     private Rect areaDeselected;
     private Rect areaSelected;
     private Rect areaTouch; // A larger rect is used for touch detection.
-    private Point textCenter;
+    private Drawable icon;
 
     /* Three states:
      * notSelected, if a MenuItem has not been touched at all in the current touch
@@ -66,16 +68,21 @@ public class DragMenuItem {
      * @param  x    x coordinate of the center of the MenuItem
      * @param  y    y coordinate of the center of the MenuItem
      */
-    public void layout(int x, int y) {
+    public void layout(int x, int y, PackageManager pm) {
         areaDeselected = new Rect(x - sizeDeselected/2, y - sizeDeselected/2, x + sizeDeselected/2, y + sizeDeselected/2);
         areaSelected = new Rect(x - sizeSelected/2, y - sizeSelected/2, x + sizeSelected/2, y + sizeSelected/2);
         areaTouch = new Rect(x - spacing/2, y - spacing/2, x + spacing/2, y + spacing/2);
-        textCenter = new Point(x, y);
+        try {
+            icon = pm.getApplicationIcon(packageName);
+            icon.setBounds(areaSelected);
+        } catch (PackageManager.NameNotFoundException e) {
+            icon = null;
+        }
 
-        if (north != null) north.layout(x, y - spacing);
-        if (east != null) east.layout(x + spacing, y);
-        if (south != null) south.layout(x, y + spacing);
-        if (west != null) west.layout(x - spacing, y);
+        if (north != null) north.layout(x, y - spacing, pm);
+        if (east != null) east.layout(x + spacing, y, pm);
+        if (south != null) south.layout(x, y + spacing, pm);
+        if (west != null) west.layout(x - spacing, y, pm);
     }
 
     public boolean isSelected() {
@@ -109,10 +116,6 @@ public class DragMenuItem {
         if (west != null) west.deselect();
     }
 
-    public Paint getTextPaint() {
-        return textPaint;
-    }
-
     public Paint getBackgroundPaint() {
         if (isSelected()) return paintSelected;
         else if (wasSelected()) return paintWasSelected;
@@ -127,6 +130,10 @@ public class DragMenuItem {
         return spacing;
     }
 
+    public Drawable getIcon() {
+        return icon;
+    }
+
     public Rect getRectForDrawing() {
         assert (areaDeselected != null && areaSelected != null) : "function called before area rects initialized";
         if (isSelected()) return areaSelected;
@@ -136,11 +143,6 @@ public class DragMenuItem {
     public Rect getRectForTouching() {
         assert areaTouch != null : "function called before touch rect initialized";
         return areaTouch;
-    }
-
-    public Point getTextCenter() {
-        assert textCenter != null : "function called before textCenter Point initialized";
-        return textCenter;
     }
 
     public DragMenuItem getNorth() {
