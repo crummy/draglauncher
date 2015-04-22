@@ -2,6 +2,7 @@ package com.malcolmcrum.draglauncher;
 
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.graphics.Rect;
 
 /**
@@ -23,6 +24,7 @@ public class DragMenuItem {
     private Rect areaDeselected;
     private Rect areaSelected;
     private Rect areaTouch; // A larger rect is used for touch detection.
+    private Point textCenter;
 
     /* Three states:
      * notSelected, if a MenuItem has not been touched at all in the current touch
@@ -68,6 +70,7 @@ public class DragMenuItem {
         areaDeselected = new Rect(x - sizeDeselected/2, y - sizeDeselected/2, x + sizeDeselected/2, y + sizeDeselected/2);
         areaSelected = new Rect(x - sizeSelected/2, y - sizeSelected/2, x + sizeSelected/2, y + sizeSelected/2);
         areaTouch = new Rect(x - spacing/2, y - spacing/2, x + spacing/2, y + spacing/2);
+        textCenter = new Point(x, y);
 
         if (north != null) north.layout(x, y - spacing);
         if (east != null) east.layout(x + spacing, y);
@@ -133,6 +136,11 @@ public class DragMenuItem {
     public Rect getRectForTouching() {
         assert areaTouch != null : "function called before touch rect initialized";
         return areaTouch;
+    }
+
+    public Point getTextCenter() {
+        assert textCenter != null : "function called before textCenter Point initialized";
+        return textCenter;
     }
 
     public DragMenuItem getNorth() {

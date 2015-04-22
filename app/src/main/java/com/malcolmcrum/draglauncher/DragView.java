@@ -3,6 +3,7 @@ package com.malcolmcrum.draglauncher;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.support.annotation.NonNull;
 import android.view.MotionEvent;
@@ -111,7 +112,8 @@ public class DragView extends View {
     private void drawItem(Canvas canvas, DragMenuItem item) {
         if (item == null) return;
         canvas.drawRect(item.getRectForDrawing(), item.getBackgroundPaint());
-        //canvas.drawText(item.label, item.getTextPaint());
+        Point textCenter = item.getTextCenter();
+        canvas.drawText(item.label, textCenter.x, textCenter.y, item.getTextPaint());
 
         if (item.getNorth() != null && item.getNorth().isVisible()) drawItem(canvas, item.getNorth());
         if (item.getEast() != null && item.getEast().isVisible()) drawItem(canvas, item.getEast());
