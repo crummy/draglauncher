@@ -39,8 +39,8 @@ public class DragMenuItem {
     private static final Paint paintNotSelected = new Paint();
     private static final Paint paintSelected = new Paint();
     private static final Paint paintWasSelected = new Paint();
-    private static final int sizeDeselected = 128;
-    private static final int sizeSelected = 196;
+    private static final int sizeDeselected = 256;
+    private static final int sizeSelected = 256;
     private static final int spacing = 256;
 
     static {
