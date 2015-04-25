@@ -20,9 +20,14 @@ public class DragLauncher extends Activity implements GestureListener {
         setContentView(dragView);
     }
 
+    public void gestureChanged(GestureManager.Direction direction) {
+        // update currentItem
+    }
+
     public void gestureFinished() {
         // get gesture
-        // perform action (if necessary)
+        // perform action (launch currentItem probably)
+        // else currentItem = null? rootItem?
     }
 
     private void initializeDefaultMenu() {
