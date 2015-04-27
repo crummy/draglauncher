@@ -17,7 +17,8 @@ public class GestureManager {
 
     private final List<GestureListener> listeners = new ArrayList<>();
     private final List<Point> touchHistory = new ArrayList<>();
-    private final int dragIgnoreAmount = 128; // TODO: Size this relative to screen res
+    private final List<Direction> directionHistory = new ArrayList<>();
+    private final int minNewDirectionCount = 3;
     private Point lastGesturePoint;
 
     public GestureManager() {
@@ -72,20 +73,25 @@ public class GestureManager {
     }
 
     private void movedTo(float x, float y) {
-        assert lastGesturePoint != null;
+        if (BuildConfig.DEBUG && !touchHistory.isEmpty()) throw AssertionError("movedTo called but touchHistory is empty: has pressed() not been called?");
 
         Point touched = new Point((int)x, (int)y);
-        if (distanceBetween(touched, lastGesturePoint) > dragIgnoreAmount) {
-            try {
-                Point lastTouched = touchHistory.get(touchHistory.size() - 1);
-                Direction newDirection = direction(lastTouched, touched);
-                if (newDirection != lastDirection) changeDirection(newDirection);
-            } catch (IndexOutOfBoundsException e) {
-                Log.d("gesture", "Tried to get previous element in empty touchHistory");
+        Point lastTouched = touchHistory.get(touchHistory.size() - 1);
+        touchHistory.add(touched); // TODO: Limit size of touchHistory
+        Direction newDirection = direction(touched, lastTouched);
+
+        // Detecting a new gesture requires a certain amount of consistent directions being detected.
+        if (directionHistory.size() > minNewDirectionCount + 1) {
+            boolean newGestureDetected = true;
+            for (Direction previousDirection : directionHistory.subList(directionHistory.size() - minNewDirectionCount - 1, directionHistory.size() - 1)) {
+                if (previousDirection != newDirection) newGestureDetected = false;
+            }
+            if (newGestureDetected) {
+                changeDirection(newDirection);
             }
         }
 
-        touchHistory.add(touched); // TODO: Limit size of touchHistory
+        directionHistory.add(newDirection);
     }
 
     private void changeDirection(Direction newDirection) {
@@ -98,6 +104,7 @@ public class GestureManager {
 
     private void pressed(float x, float y) {
         lastGesturePoint = new Point((int)x, (int)y);
+        touchHistory.add(lastGesturePoint);
     }
 
     private void released() {
