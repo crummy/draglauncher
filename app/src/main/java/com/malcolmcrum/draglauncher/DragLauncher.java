@@ -7,11 +7,10 @@ import android.widget.Toast;
 
 public class DragLauncher extends Activity implements GestureListener {
 
-    DragMenuItem rootItem;
+    DragMenuRoot rootItem;
     DragMenuItem currentItem = null;
     DragView dragView;
     Toast toast;
-    String allGestures = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,21 +24,31 @@ public class DragLauncher extends Activity implements GestureListener {
         toast = Toast.makeText(this, "empty", Toast.LENGTH_SHORT);
     }
 
+    public void gestureStarted() {
+        currentItem = rootItem;
+    }
+
     public void gestureChanged(GestureManager.Direction direction) {
-        allGestures += direction + " ";
-        toast.setText(allGestures);
-        toast.show();
+        if (currentItem != null) {
+            currentItem = currentItem.getChild(direction);
+            toast.setText(currentItem.getName());
+            toast.show();
+        }
     }
 
     public void gestureFinished() {
-        allGestures = "";
-        // get gesture
-        // perform action (launch currentItem probably)
-        // else currentItem = null? rootItem?
+        if (currentItem != null) {
+            currentItem.selectItem();
+        } else {
+            currentItem = null;
+        }
     }
 
     private void initializeDefaultMenu() {
-        rootItem = new DragMenuItem("com.malcolmcrum.draglauncher");
+        rootItem = new DragMenuRoot();
+        rootItem.setChild(GestureManager.Direction.east, "com.htc.camera");
+        rootItem.setChild(GestureManager.Direction.west, "com.google.android.music")
+                .setChild(GestureManager.Direction.north, "com.sonos.acr");
     }
 
 }

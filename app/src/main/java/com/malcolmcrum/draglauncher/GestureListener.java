@@ -5,6 +5,7 @@ package com.malcolmcrum.draglauncher;
  * Created by Malcolm on 4/23/2015.
  */
 public interface GestureListener {
+    void gestureStarted();
     void gestureChanged(GestureManager.Direction direction);
     void gestureFinished();
 }

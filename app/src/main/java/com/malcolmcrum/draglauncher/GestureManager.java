@@ -106,6 +106,9 @@ public class GestureManager {
     private void pressed(float x, float y) {
         lastGesturePoint = new Point((int)x, (int)y);
         touchHistory.add(lastGesturePoint);
+        for (GestureListener listener : listeners) {
+            listener.gestureStarted();
+        }
     }
 
     private void released() {
