@@ -10,7 +10,6 @@ public class DragLauncher extends Activity implements GestureListener {
     DragMenuRoot rootItem;
     DragMenuItem currentItem = null;
     DragView dragView;
-    Toast toast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,8 +19,6 @@ public class DragLauncher extends Activity implements GestureListener {
 
         dragView = new DragView(this);
         setContentView(dragView);
-
-        toast = Toast.makeText(this, "empty", Toast.LENGTH_SHORT);
     }
 
     public void gestureStarted() {
@@ -31,16 +28,17 @@ public class DragLauncher extends Activity implements GestureListener {
     public void gestureChanged(GestureManager.Direction direction) {
         if (currentItem != null) {
             currentItem = currentItem.getChild(direction);
-            toast.setText(currentItem.getName());
-            toast.show();
         }
     }
 
     public void gestureFinished() {
         if (currentItem != null) {
             currentItem.selectItem();
+            Toast toast = Toast.makeText(this, currentItem.getName(), Toast.LENGTH_SHORT);
+            toast.show();
         } else {
-            currentItem = null;
+            Toast toast = Toast.makeText(this, "null", Toast.LENGTH_SHORT);
+            toast.show();
         }
     }
 
@@ -49,6 +47,14 @@ public class DragLauncher extends Activity implements GestureListener {
         rootItem.setChild(GestureManager.Direction.east, "com.htc.camera");
         rootItem.setChild(GestureManager.Direction.west, "com.google.android.music")
                 .setChild(GestureManager.Direction.north, "com.sonos.acr");
+        rootItem.setChild(GestureManager.Direction.north, "com.android.chrome")
+                .setChild(GestureManager.Direction.east, "com.google.android.talk")
+                .setChild(GestureManager.Direction.north, "com.facebook.katana");
+        rootItem.getChild(GestureManager.Direction.north)
+                .getChild(GestureManager.Direction.east)
+                .setChild(GestureManager.Direction.south, "com.twitter.android");
+        rootItem.getChild(GestureManager.Direction.north)
+                .setChild(GestureManager.Direction.west, "com.google.android.apps.inbox");
     }
 
 }

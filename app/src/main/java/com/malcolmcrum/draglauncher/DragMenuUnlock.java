@@ -10,9 +10,8 @@ public class DragMenuUnlock implements DragMenuItem {
 
     }
 
-    public DragMenuItem setChild(GestureManager.Direction direction, DragMenuItem child) {
+    public DragMenuItem setChild(GestureManager.Direction direction, String name) {
         throw new AssertionError("Not allowed to set child of DragMenuUnlock.");
-        return null
     }
 
     public DragMenuItem getChild(GestureManager.Direction direction) {
