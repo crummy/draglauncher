@@ -73,15 +73,16 @@ public class GestureManager {
     }
 
     private void movedTo(float x, float y) {
-        if (BuildConfig.DEBUG && !touchHistory.isEmpty()) throw AssertionError("movedTo called but touchHistory is empty: has pressed() not been called?");
+        if (touchHistory.isEmpty()) throw new AssertionError("movedTo called but touchHistory is empty: has pressed() not been called?");
 
         Point touched = new Point((int)x, (int)y);
         Point lastTouched = touchHistory.get(touchHistory.size() - 1);
         touchHistory.add(touched); // TODO: Limit size of touchHistory
-        Direction newDirection = direction(touched, lastTouched);
+
+        Direction newDirection = direction(lastTouched, touched);
 
         // Detecting a new gesture requires a certain amount of consistent directions being detected.
-        if (directionHistory.size() > minNewDirectionCount + 1) {
+        if (newDirection != lastDirection && directionHistory.size() > minNewDirectionCount + 1) {
             boolean newGestureDetected = true;
             for (Direction previousDirection : directionHistory.subList(directionHistory.size() - minNewDirectionCount - 1, directionHistory.size() - 1)) {
                 if (previousDirection != newDirection) newGestureDetected = false;

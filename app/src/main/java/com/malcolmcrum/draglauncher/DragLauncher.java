@@ -11,6 +11,7 @@ public class DragLauncher extends Activity implements GestureListener {
     DragMenuItem currentItem = null;
     DragView dragView;
     Toast toast;
+    String allGestures = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,11 +26,13 @@ public class DragLauncher extends Activity implements GestureListener {
     }
 
     public void gestureChanged(GestureManager.Direction direction) {
-        toast.setText("New direction: " + direction);
+        allGestures += direction + " ";
+        toast.setText(allGestures);
         toast.show();
     }
 
     public void gestureFinished() {
+        allGestures = "";
         // get gesture
         // perform action (launch currentItem probably)
         // else currentItem = null? rootItem?
