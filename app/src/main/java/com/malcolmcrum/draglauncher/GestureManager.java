@@ -18,7 +18,6 @@ public class GestureManager {
     private final List<Point> touchHistory = new ArrayList<>();
     private final List<Direction> directionHistory = new ArrayList<>();
     private final int minNewDirectionCount = 3;
-    private Point lastGesturePoint;
 
     public GestureManager() {
         // init
@@ -49,7 +48,15 @@ public class GestureManager {
     }
 
     public boolean isGesturing() {
-        return touchHistory.isEmpty();
+        return directionHistory.isEmpty();
+    }
+
+    public Point touchLocation() {
+        if (touchHistory.isEmpty()) {
+            return null;
+        } else {
+            return touchHistory.get(touchHistory.size() - 1);
+        }
     }
 
     public void addListener(GestureListener listener) {
@@ -103,19 +110,17 @@ public class GestureManager {
             listener.gestureChanged(newDirection);
         }
         lastDirection = newDirection;
-        lastGesturePoint = touchHistory.get(touchHistory.size() - 1);
     }
 
     private void pressed(float x, float y) {
-        lastGesturePoint = new Point((int)x, (int)y);
-        touchHistory.add(lastGesturePoint);
+        Point touchPosition = new Point((int)x, (int)y);
+        touchHistory.add(touchPosition);
         for (GestureListener listener : listeners) {
             listener.gestureStarted();
         }
     }
 
     private void released() {
-        lastGesturePoint = null;
         lastDirection = null;
         touchHistory.clear();
         for (GestureListener listener : listeners) {

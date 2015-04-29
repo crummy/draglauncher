@@ -24,6 +24,7 @@ public class DragView extends View {
     private final GestureManager gestureManager = new GestureManager();
     private final Paint gesturePaint = new Paint();
     private Drawable launcherIcon;
+    private DragMenu menu;
     private Map<String, Drawable> icons = new HashMap<>();
 
     public DragView(Context context) {
@@ -31,9 +32,12 @@ public class DragView extends View {
         super(context);
     }
 
-    public DragView(DragLauncher context) {
+    public DragView(DragLauncher context, DragMenu menu) {
         super(context);
-        gestureManager.addListener(context);
+
+        this.menu = menu;
+
+        gestureManager.addListener(menu);
 
         gesturePaint.setColor(Color.BLACK);
         gesturePaint.setStrokeWidth(4);
@@ -47,8 +51,8 @@ public class DragView extends View {
 
     @Override
     public void onDraw(Canvas canvas) {
-        drawPoints(canvas);
         if (gestureManager.isGesturing()) {
+            drawPoints(canvas);
             drawCurrentSelection(canvas);
         } else {
             drawAppIcon(canvas);
@@ -87,7 +91,7 @@ public class DragView extends View {
     }
 
     private void drawCurrentSelection(Canvas canvas) {
-
+        DragMenuItem selectedItem = menu.getCurrent();
     }
 
 }
