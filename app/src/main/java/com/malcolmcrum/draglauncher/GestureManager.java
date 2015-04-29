@@ -48,7 +48,11 @@ public class GestureManager {
     }
 
     public boolean isGesturing() {
-        return directionHistory.isEmpty();
+        return !directionHistory.isEmpty();
+    }
+
+    public boolean isTouching() {
+        return !touchHistory.isEmpty();
     }
 
     public Point touchLocation() {
@@ -121,10 +125,10 @@ public class GestureManager {
     }
 
     private void released() {
-        lastDirection = null;
-        touchHistory.clear();
         for (GestureListener listener : listeners) {
             listener.gestureFinished();
         }
+        lastDirection = null;
+        touchHistory.clear();
     }
 }

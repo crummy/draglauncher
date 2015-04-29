@@ -35,6 +35,7 @@ public class DragMenuRoot implements DragMenuItem {
 
     public DragMenuItem setChild(GestureManager.Direction direction, String name) {
         DragMenuChild child = new DragMenuChild(name);
+        child.directionFromParent = direction;
         switch (direction) {
             case north:
                 north = child;
