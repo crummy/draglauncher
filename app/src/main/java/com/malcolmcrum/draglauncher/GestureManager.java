@@ -48,7 +48,7 @@ public class GestureManager {
     }
 
     public boolean isGesturing() {
-        return !directionHistory.isEmpty();
+        return isTouching() && !directionHistory.isEmpty();
     }
 
     public boolean isTouching() {
