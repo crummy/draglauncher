@@ -18,6 +18,7 @@ public class DragLauncher extends Activity implements GestureListener {
         initializeDefaultMenu();
 
         dragView = new DragView(this);
+        loadIcons(rootItem);
         setContentView(dragView);
     }
 
@@ -55,6 +56,17 @@ public class DragLauncher extends Activity implements GestureListener {
                 .setChild(GestureManager.Direction.south, "com.twitter.android");
         rootItem.getChild(GestureManager.Direction.north)
                 .setChild(GestureManager.Direction.west, "com.google.android.apps.inbox");
+    }
+
+    private void loadIcons(DragMenuItem item) {
+        if (item == null) return;
+
+        dragView.loadIcon(item.getName());
+
+        loadIcons(item.getChild(GestureManager.Direction.east));
+        loadIcons(item.getChild(GestureManager.Direction.west));
+        loadIcons(item.getChild(GestureManager.Direction.south));
+        loadIcons(item.getChild(GestureManager.Direction.north));
     }
 
 }

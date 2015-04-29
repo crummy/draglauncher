@@ -1,7 +1,6 @@
 package com.malcolmcrum.draglauncher;
 
 import android.graphics.Point;
-import android.util.Log;
 import android.view.MotionEvent;
 
 import java.util.ArrayList;
@@ -47,6 +46,10 @@ public class GestureManager {
 
     public List<Point> getHistory() {
         return touchHistory;
+    }
+
+    public boolean isGesturing() {
+        return touchHistory.isEmpty();
     }
 
     public void addListener(GestureListener listener) {

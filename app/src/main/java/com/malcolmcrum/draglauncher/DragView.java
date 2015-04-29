@@ -11,11 +11,12 @@ import android.support.annotation.NonNull;
 import android.view.MotionEvent;
 import android.view.View;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
- * Canvas for drawing launcher. Handles input, too.
- *
+ * Canvas for drawing launcher. Input handed off to GestureManager
  * Created by Malcolm on 4/19/2015.
  */
 public class DragView extends View {
@@ -23,6 +24,7 @@ public class DragView extends View {
     private final GestureManager gestureManager = new GestureManager();
     private final Paint gesturePaint = new Paint();
     private Drawable launcherIcon;
+    private Map<String, Drawable> icons = new HashMap<>();
 
     public DragView(Context context) {
         // TODO: This constructor should never be used, but triggers a warning if it's missing. Fix?
@@ -46,7 +48,11 @@ public class DragView extends View {
     @Override
     public void onDraw(Canvas canvas) {
         drawPoints(canvas);
-        drawCurrentSelection(canvas);
+        if (gestureManager.isGesturing()) {
+            drawCurrentSelection(canvas);
+        } else {
+            drawAppIcon(canvas);
+        }
     }
 
     @Override
@@ -58,6 +64,14 @@ public class DragView extends View {
         return handledGesture;
     }
 
+    public void loadIcon(String name) {
+        try {
+            icons.put(name, getContext().getPackageManager().getApplicationIcon(name));
+        } catch (PackageManager.NameNotFoundException e) {
+            icons.put(name, null);
+        }
+    }
+
     private void drawPoints(Canvas canvas) {
         List<Point> points = gestureManager.getHistory();
         for (int pointIndex = 1; pointIndex < points.size(); pointIndex++) {
@@ -67,9 +81,13 @@ public class DragView extends View {
         }
     }
 
-    private void drawCurrentSelection(Canvas canvas) {
+    private void drawAppIcon(Canvas canvas) {
         launcherIcon.setBounds(canvas.getWidth()/2 - 128, 3*canvas.getHeight()/4 - 128, canvas.getWidth()/2 + 128, 3*canvas.getHeight()/4 + 128);
         launcherIcon.draw(canvas);
+    }
+
+    private void drawCurrentSelection(Canvas canvas) {
+
     }
 
 }
