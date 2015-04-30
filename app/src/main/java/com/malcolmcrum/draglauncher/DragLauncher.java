@@ -16,8 +16,8 @@ public class DragLauncher extends Activity {
         menu = new DragMenu();
 
         dragView = new DragView(this, menu);
-        loadIcons(menu.getRoot());
         setContentView(dragView);
+        loadIcons(menu.getRoot());
     }
 
     private void loadIcons(DragMenuItem item) {

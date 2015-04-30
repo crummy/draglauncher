@@ -48,7 +48,7 @@ public class GestureManager {
     }
 
     public boolean isGesturing() {
-        return isTouching() && !directionHistory.isEmpty();
+        return !directionHistory.isEmpty();
     }
 
     public boolean isTouching() {
@@ -130,5 +130,6 @@ public class GestureManager {
         }
         lastDirection = null;
         touchHistory.clear();
+        directionHistory.clear();
     }
 }

@@ -31,7 +31,7 @@ public class DragView extends View {
     private Map<String, Drawable> icons = new HashMap<>();
     private int iconSize = 256; // TODO: Make this dependent on screen size
     private int childIconSize = 128; // TODO: Make this dependent on screen size
-    private int childIconDistance = 512; // TODO: ake this dependent on screen size
+    private int childIconDistance = 256; // TODO: ake this dependent on screen size
 
     public DragView(Context context) {
         // TODO: This constructor should never be used, but triggers a warning if it's missing. Fix?
@@ -59,7 +59,7 @@ public class DragView extends View {
     public void onDraw(Canvas canvas) {
         if (gestureManager.isGesturing()) {
             drawPoints(canvas);
-            //drawCurrentSelection(canvas);
+            drawCurrentSelection(canvas);
         } else if (gestureManager.isTouching()) {
             drawCurrentSelection(canvas);
             drawAppIcon(canvas);
@@ -129,7 +129,7 @@ public class DragView extends View {
         DragMenuItem eastChild = selectedItem.getChild(GestureManager.Direction.east);
         if (eastChild != null) {
             Drawable eastIcon = icons.get(eastChild.getName());
-            drawIcon(eastIcon, touchPoint.x - childIconDistance, touchPoint.y, childIconSize, canvas);
+            drawIcon(eastIcon, touchPoint.x + childIconDistance, touchPoint.y, childIconSize, canvas);
         }
     }
 
