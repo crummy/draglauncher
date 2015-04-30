@@ -31,8 +31,10 @@ public class DragMenu implements GestureListener {
     }
 
     public void gestureFinished() {
-        currentItem.selectItem();
-        currentItem = null;
+        if (currentItem != null) {
+            currentItem.selectItem(); // TODO: I feel like this should be in the controller?
+            currentItem = null;
+        }
     }
 
     private void initializeDefaultMenu() {

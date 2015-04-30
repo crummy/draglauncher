@@ -57,10 +57,10 @@ public class DragView extends View {
 
     @Override
     public void onDraw(Canvas canvas) {
-        if (gestureManager.isGesturing()) {
+        if (gestureManager.isGesturing() && menu.getCurrent() != null) {
             drawPoints(canvas);
             drawCurrentSelection(canvas);
-        } else if (gestureManager.isTouching()) {
+        } else if (gestureManager.isTouching() && menu.getCurrent() != null) {
             drawCurrentSelection(canvas);
             drawAppIcon(canvas);
         } else {
