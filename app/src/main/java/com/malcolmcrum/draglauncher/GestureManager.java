@@ -13,11 +13,13 @@ import java.util.List;
 public class GestureManager {
     public enum Direction {north, east, south, west}
     private Direction lastDirection;
+    private Point lastGestureStart;
 
     private final List<GestureListener> listeners = new ArrayList<>();
     private final List<Point> touchHistory = new ArrayList<>();
     private final List<Direction> directionHistory = new ArrayList<>();
     private final int minNewDirectionCount = 3;
+    private final int minGestureDetectionDistance = 64; // TODO: Make this resolution independent
 
     public GestureManager() {
         // init
@@ -66,12 +68,6 @@ public class GestureManager {
         listeners.add(listener);
     }
 
-    private double distanceBetween(Point p1, Point p2) {
-        int dx = p2.x - p1.x;
-        int dy = p2.y - p1.x;
-        return Math.sqrt(dx * dx + dy * dy);
-    }
-
     private Direction direction(Point from, Point to) {
         int dx = to.x - from.x;
         int dy = to.y - from.y;
@@ -95,7 +91,11 @@ public class GestureManager {
         Direction newDirection = direction(lastTouched, touched);
 
         // Detecting a new gesture requires a certain amount of consistent directions being detected.
-        if (newDirection != lastDirection && directionHistory.size() > minNewDirectionCount + 1) {
+        boolean directionChanged = newDirection != lastDirection;
+        boolean enoughDirectionHistory = directionHistory.size() > minNewDirectionCount + 1;
+        boolean movedFarEnough = Math.abs(touched.x - lastGestureStart.x) > minGestureDetectionDistance
+                              || Math.abs(touched.y - lastGestureStart.y) > minGestureDetectionDistance;
+        if (directionChanged && enoughDirectionHistory && movedFarEnough) {
             boolean newGestureDetected = true;
             for (Direction previousDirection : directionHistory.subList(directionHistory.size() - minNewDirectionCount - 1, directionHistory.size() - 1)) {
                 if (previousDirection != newDirection) newGestureDetected = false;
@@ -118,6 +118,7 @@ public class GestureManager {
     private void pressed(float x, float y) {
         Point touchPosition = new Point((int)x, (int)y);
         touchHistory.add(touchPosition);
+        lastGestureStart = touchPosition;
         for (GestureListener listener : listeners) {
             listener.gestureStarted();
         }
@@ -127,6 +128,7 @@ public class GestureManager {
         for (GestureListener listener : listeners) {
             listener.gestureFinished();
         }
+        lastGestureStart = null;
         lastDirection = null;
         touchHistory.clear();
         directionHistory.clear();

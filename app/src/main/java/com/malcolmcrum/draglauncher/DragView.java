@@ -12,8 +12,6 @@ import android.support.annotation.NonNull;
 import android.view.MotionEvent;
 import android.view.View;
 
-import junit.framework.Assert;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
