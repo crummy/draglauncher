@@ -38,7 +38,6 @@ public class GestureManager {
                 movedTo(input.getX(), input.getY());
                 handledGesture = true;
                 break;
-
         }
         return handledGesture;
     }
