@@ -12,14 +12,20 @@ import java.util.List;
  */
 public class GestureManager {
     public enum Direction {north, east, south, west}
-    private Direction lastDirection;
-    private Point lastGestureStart;
+    public class Gesture {
+        public Gesture(Direction d, Point p) {
+            direction = d;
+            startPosition = p;
+        }
+        final Direction direction;
+        final Point startPosition;
+    }
 
     private final List<GestureListener> listeners = new ArrayList<>();
+
     private final List<Point> touchHistory = new ArrayList<>();
-    private final List<Direction> directionHistory = new ArrayList<>();
-    private final int minNewDirectionCount = 3;
-    private final int minGestureDetectionDistance = 64; // TODO: Make this resolution independent
+    private final List<Gesture> gestureHistory = new ArrayList<>();
+    private final int minGestureDetectionDistance = 128; // TODO: Make this resolution independent
 
     public GestureManager() {
         // init
@@ -44,19 +50,23 @@ public class GestureManager {
         return handledGesture;
     }
 
-    public List<Point> getHistory() {
+    public List<Point> getTouchHistory() {
         return touchHistory;
     }
 
+    public List<Gesture> getGestureHistory() {
+        return gestureHistory;
+    }
+
     public boolean isGesturing() {
-        return !directionHistory.isEmpty();
+        return !gestureHistory.isEmpty();
     }
 
     public boolean isTouching() {
         return !touchHistory.isEmpty();
     }
 
-    public Point touchLocation() {
+    public Point currentTouchLocation() {
         if (touchHistory.isEmpty()) {
             return null;
         } else {
@@ -84,41 +94,52 @@ public class GestureManager {
     private void movedTo(float x, float y) {
         if (touchHistory.isEmpty()) throw new AssertionError("movedTo called but touchHistory is empty: has pressed() not been called?");
 
-        Point touched = new Point((int)x, (int)y);
-        Point lastTouched = touchHistory.get(touchHistory.size() - 1);
-        touchHistory.add(touched); // TODO: Limit size of touchHistory
+        Point touchPosition = new Point((int)x, (int)y);
+        Point lastTouchPosition = touchHistory.get(touchHistory.size() - 1);
+        touchHistory.add(touchPosition); // TODO: Limit size of touchHistory
 
-        Direction newDirection = direction(lastTouched, touched);
+        Direction newDirection = direction(lastTouchPosition, touchPosition);
 
-        // Detecting a new gesture requires a certain amount of consistent directions being detected.
-        boolean directionChanged = newDirection != lastDirection;
-        boolean enoughDirectionHistory = directionHistory.size() > minNewDirectionCount + 1;
-        boolean movedFarEnough = Math.abs(touched.x - lastGestureStart.x) > minGestureDetectionDistance
-                              || Math.abs(touched.y - lastGestureStart.y) > minGestureDetectionDistance;
-        if (directionChanged && enoughDirectionHistory && movedFarEnough) {
-            boolean newGestureDetected = true;
-            for (Direction previousDirection : directionHistory.subList(directionHistory.size() - minNewDirectionCount - 1, directionHistory.size() - 1)) {
-                if (previousDirection != newDirection) newGestureDetected = false;
-            }
-            if (newGestureDetected) {
+        boolean isFirstGesture = gestureHistory.isEmpty();
+        if (isFirstGesture) {
+
+            Point initialTouchPosition = touchHistory.get(0);
+            boolean movedFarEnough = (Math.abs(touchPosition.x - initialTouchPosition.x) > minGestureDetectionDistance
+                                   || Math.abs(touchPosition.y - initialTouchPosition.y) > minGestureDetectionDistance);
+
+            if (movedFarEnough) {
                 changeDirection(newDirection);
             }
-        }
+        } else {
 
-        directionHistory.add(newDirection);
+            Direction lastGesturesDirection = prevGesture().direction;
+            boolean directionChanged = (newDirection != lastGesturesDirection);
+
+            Point lastGesturePosition = prevGesture().startPosition;
+            boolean movedFarEnough = (Math.abs(touchPosition.x - lastGesturePosition.x) > minGestureDetectionDistance
+                                   && Math.abs(touchPosition.y - lastGesturePosition.y) > minGestureDetectionDistance);
+
+            if (directionChanged && movedFarEnough) {
+                changeDirection(newDirection);
+            }
+
+        }
+    }
+
+    private Gesture prevGesture() {
+        return gestureHistory.isEmpty() ? null : gestureHistory.get(gestureHistory.size() - 1);
     }
 
     private void changeDirection(Direction newDirection) {
         for (GestureListener listener : listeners) {
             listener.gestureChanged(newDirection);
         }
-        lastDirection = newDirection;
+        gestureHistory.add(new Gesture(newDirection, currentTouchLocation()));
     }
 
     private void pressed(float x, float y) {
         Point touchPosition = new Point((int)x, (int)y);
         touchHistory.add(touchPosition);
-        lastGestureStart = touchPosition;
         for (GestureListener listener : listeners) {
             listener.gestureStarted();
         }
@@ -128,9 +149,7 @@ public class GestureManager {
         for (GestureListener listener : listeners) {
             listener.gestureFinished();
         }
-        lastGestureStart = null;
-        lastDirection = null;
         touchHistory.clear();
-        directionHistory.clear();
+        gestureHistory.clear();
     }
 }
