@@ -96,11 +96,39 @@ public class DragView extends View {
 
     private void drawGestureRect(Canvas canvas) {
         int size = 32;
-        for (GestureManager.Gesture gesture : gestureManager.getGestureHistory()) {
+        List<GestureManager.Gesture> history = gestureManager.getGestureHistory();
+        for (GestureManager.Gesture gesture : history) {
             Rect rect = new Rect(gesture.startPosition.x - size, gesture.startPosition.y - size, gesture.startPosition.x + size, gesture.startPosition.y + size);
             canvas.drawRect(rect, gesturePaint);
         }
 
+        if (!history.isEmpty()) {
+            Rect rect = rectBetweenPoints(new Point(canvas.getWidth()/2, 3*canvas.getHeight()/4), gestureManager.currentTouchLocation(), history.get(0).direction);
+            canvas.drawRect(rect, gesturePaint);
+        }
+    }
+
+    private Rect rectBetweenPoints(Point start, Point end, GestureManager.Direction direction) {
+        int padding = 32;
+        int left = start.x - padding;
+        int right = start.x + padding;
+        int bottom = start.y + padding;
+        int top = start.y - padding;
+        switch (direction) {
+            case north:
+                top = end.y - padding;
+                break;
+            case south:
+                bottom = end.y + padding;
+                break;
+            case east:
+                right = end.x + padding;
+                break;
+            case west:
+                left = end.x - padding;
+                break;
+        }
+        return new Rect(left, top, right, bottom);
     }
 
     private void drawAppIcon(Canvas canvas) {
