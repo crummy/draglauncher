@@ -157,30 +157,48 @@ public class DragView extends View {
         if (selectedItem == null) throw new AssertionError("Tried to draw selection but nothing is selected");
         Drawable selectedIcon = icons.get(selectedItem.getName());
 
-        drawIcon(selectedIcon, touchPoint.x, touchPoint.y, iconSize, canvas);
+        Point iconCenter = new Point(canvas.getWidth()/2, 3*canvas.getHeight()/4);
+        List<GestureManager.Gesture> gestureHistory = gestureManager.getGestureHistory();
+
+        if (!gestureHistory.isEmpty()) {
+            GestureManager.Gesture lastGesture = gestureHistory.get(gestureHistory.size() - 1);
+
+            switch (lastGesture.direction) {
+                case north:
+                case south:
+                    iconCenter.set(lastGesture.startPosition.x, touchPoint.y);
+                    break;
+                case east:
+                case west:
+                    iconCenter.set(touchPoint.x, lastGesture.startPosition.y);
+                    break;
+            }
+        }
+
+        drawIcon(selectedIcon, iconCenter.x, iconCenter.y, iconSize, canvas);
 
         DragMenuItem northChild = selectedItem.getChild(GestureManager.Direction.north);
         if (northChild != null) {
             Drawable northIcon = icons.get(northChild.getName());
-            drawIcon(northIcon, touchPoint.x, touchPoint.y - childIconDistance, childIconSize, canvas);
+            drawIcon(northIcon, iconCenter.x, iconCenter.y - childIconDistance, childIconSize, canvas);
         }
 
         DragMenuItem southChild = selectedItem.getChild(GestureManager.Direction.south);
         if (southChild != null) {
             Drawable southIcon = icons.get(southChild.getName());
-            drawIcon(southIcon, touchPoint.x, touchPoint.y + childIconDistance, childIconSize, canvas);
+            drawIcon(southIcon, iconCenter.x, iconCenter.y + childIconDistance, childIconSize, canvas);
         }
 
         DragMenuItem westChild = selectedItem.getChild(GestureManager.Direction.west);
         if (westChild != null) {
             Drawable westIcon = icons.get(westChild.getName());
-            drawIcon(westIcon, touchPoint.x - childIconDistance, touchPoint.y, childIconSize, canvas);
+            drawIcon(westIcon, iconCenter.x - childIconDistance, iconCenter.y, childIconSize, canvas);
         }
 
         DragMenuItem eastChild = selectedItem.getChild(GestureManager.Direction.east);
         if (eastChild != null) {
             Drawable eastIcon = icons.get(eastChild.getName());
-            drawIcon(eastIcon, touchPoint.x + childIconDistance, touchPoint.y, childIconSize, canvas);
+            drawIcon(eastIcon, iconCenter.x + childIconDistance, iconCenter.y, childIconSize, canvas);
         }
     }
 
