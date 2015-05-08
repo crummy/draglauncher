@@ -25,6 +25,7 @@ public class DragView extends View {
 
     private final GestureManager gestureManager = new GestureManager();
     private final Paint gesturePaint = new Paint();
+    private final Paint touchPaint = new Paint();
     private Drawable launcherIcon;
     private DragMenu menu;
     private Map<String, Drawable> icons = new HashMap<>();
@@ -44,8 +45,9 @@ public class DragView extends View {
 
         gestureManager.addListener(menu);
 
-        gesturePaint.setColor(Color.WHITE);
-        gesturePaint.setStrokeWidth(15);
+        gesturePaint.setColor(Color.GRAY);
+        touchPaint.setColor(Color.WHITE);
+        touchPaint.setStrokeWidth(8);
 
         try {
             launcherIcon = context.getPackageManager().getApplicationIcon("com.malcolmcrum.draglauncher");
@@ -59,7 +61,7 @@ public class DragView extends View {
         if (gestureManager.isGesturing() && menu.getCurrent() != null) {
             drawPoints(canvas);
             drawCurrentSelection(canvas);
-            drawGestureRect(canvas);
+            drawGestureRects(canvas);
         } else if (gestureManager.isTouching() && menu.getCurrent() != null) {
             drawCurrentSelection(canvas);
             drawAppIcon(canvas);
@@ -90,26 +92,38 @@ public class DragView extends View {
         for (int pointIndex = 1; pointIndex < points.size(); ++pointIndex) {
             Point lineStart = points.get(pointIndex-1);
             Point lineEnd = points.get(pointIndex);
-            canvas.drawLine(lineStart.x, lineStart.y, lineEnd.x, lineEnd.y, gesturePaint);
+            canvas.drawLine(lineStart.x, lineStart.y, lineEnd.x, lineEnd.y, touchPaint);
         }
     }
 
-    private void drawGestureRect(Canvas canvas) {
+    private void drawGestureRects(Canvas canvas) {
         int size = 32;
         List<GestureManager.Gesture> history = gestureManager.getGestureHistory();
+
+        // draw squares for each gesture. debug purposes only
         for (GestureManager.Gesture gesture : history) {
             Rect rect = new Rect(gesture.startPosition.x - size, gesture.startPosition.y - size, gesture.startPosition.x + size, gesture.startPosition.y + size);
+            canvas.drawRect(rect, touchPaint);
+        }
+
+        // draw previous gestures
+        for (int gestureIndex = 0; gestureIndex < history.size() - 1; ++gestureIndex) {
+            GestureManager.Gesture gesture = history.get(gestureIndex);
+            GestureManager.Gesture nextGesture = history.get(gestureIndex + 1);
+            Rect rect = rectBetweenPoints(gesture.startPosition, nextGesture.startPosition, gesture.direction);
             canvas.drawRect(rect, gesturePaint);
         }
 
+        // draw current gesture
         if (!history.isEmpty()) {
-            Rect rect = rectBetweenPoints(new Point(canvas.getWidth()/2, 3*canvas.getHeight()/4), gestureManager.currentTouchLocation(), history.get(0).direction);
+            GestureManager.Gesture lastGesture = history.get(history.size() - 1);
+            Rect rect = rectBetweenPoints(lastGesture.startPosition, gestureManager.currentTouchLocation(), lastGesture.direction);
             canvas.drawRect(rect, gesturePaint);
         }
     }
 
     private Rect rectBetweenPoints(Point start, Point end, GestureManager.Direction direction) {
-        int padding = 32;
+        int padding = 64;
         int left = start.x - padding;
         int right = start.x + padding;
         int bottom = start.y + padding;
