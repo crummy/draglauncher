@@ -9,8 +9,11 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
+import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
+
+import org.apache.http.MethodNotSupportedException;
 
 import java.util.HashMap;
 import java.util.List;
@@ -23,7 +26,8 @@ import java.util.Map;
  */
 public class DragView extends View {
 
-    private final GestureManager gestureManager = new GestureManager();
+    private final GestureManager gestureManager;
+    private final Point dragStartPoint;
     private final Paint gesturePaint = new Paint();
     private final Paint touchPaint = new Paint();
     private Drawable launcherIcon;
@@ -36,6 +40,8 @@ public class DragView extends View {
     public DragView(Context context) {
         // TODO: This constructor should never be used, but triggers a warning if it's missing. Fix?
         super(context);
+        this.gestureManager = new GestureManager(new Point(0,0));
+        throw new AssertionError("Calling an unused constructor");
     }
 
     public DragView(DragLauncher context, DragMenu menu) {
@@ -43,11 +49,16 @@ public class DragView extends View {
 
         this.menu = menu;
 
+        DisplayMetrics dm = new DisplayMetrics();
+        context.getWindowManager().getDefaultDisplay().getMetrics(dm);
+        dragStartPoint = new Point(dm.widthPixels/2, 2*dm.heightPixels/3);
+
+        gestureManager = new GestureManager(dragStartPoint);
         gestureManager.addListener(menu);
 
-        gesturePaint.setColor(Color.GRAY);
-        touchPaint.setColor(Color.WHITE);
-        touchPaint.setStrokeWidth(8);
+        gesturePaint.setColor(Color.WHITE);
+        touchPaint.setColor(Color.RED);
+        touchPaint.setStrokeWidth(2);
 
         try {
             launcherIcon = context.getPackageManager().getApplicationIcon("com.malcolmcrum.draglauncher");
@@ -59,9 +70,8 @@ public class DragView extends View {
     @Override
     public void onDraw(Canvas canvas) {
         if (gestureManager.isGesturing() && menu.getCurrent() != null) {
-            drawPoints(canvas);
-            drawCurrentSelection(canvas);
             drawGestureRects(canvas);
+            drawCurrentSelection(canvas);
         } else if (gestureManager.isTouching() && menu.getCurrent() != null) {
             drawCurrentSelection(canvas);
             drawAppIcon(canvas);
@@ -87,20 +97,11 @@ public class DragView extends View {
         }
     }
 
-    private void drawPoints(Canvas canvas) {
-        List<Point> points = gestureManager.getTouchHistory();
-        for (int pointIndex = 1; pointIndex < points.size(); ++pointIndex) {
-            Point lineStart = points.get(pointIndex-1);
-            Point lineEnd = points.get(pointIndex);
-            canvas.drawLine(lineStart.x, lineStart.y, lineEnd.x, lineEnd.y, touchPaint);
-        }
-    }
-
     private void drawGestureRects(Canvas canvas) {
-        int size = 32;
         List<GestureManager.Gesture> history = gestureManager.getGestureHistory();
 
         // draw squares for each gesture. debug purposes only
+        int size = 8;
         for (GestureManager.Gesture gesture : history) {
             Rect rect = new Rect(gesture.startPosition.x - size, gesture.startPosition.y - size, gesture.startPosition.x + size, gesture.startPosition.y + size);
             canvas.drawRect(rect, touchPaint);
@@ -117,7 +118,7 @@ public class DragView extends View {
         // draw current gesture
         if (!history.isEmpty()) {
             GestureManager.Gesture lastGesture = history.get(history.size() - 1);
-            Rect rect = rectBetweenPoints(lastGesture.startPosition, gestureManager.currentTouchLocation(), lastGesture.direction);
+            Rect rect = rectBetweenPoints(lastGesture.startPosition, gestureManager.getTouchLocation(), lastGesture.direction);
             canvas.drawRect(rect, gesturePaint);
         }
     }
@@ -146,18 +147,18 @@ public class DragView extends View {
     }
 
     private void drawAppIcon(Canvas canvas) {
-        drawIcon(launcherIcon, canvas.getWidth()/2, 3*canvas.getHeight()/4, iconSize, canvas);
+        drawIcon(launcherIcon, dragStartPoint.x, dragStartPoint.y, iconSize, canvas);
     }
 
     private void drawCurrentSelection(Canvas canvas) {
-        Point touchPoint = gestureManager.currentTouchLocation();
+        Point touchPoint = gestureManager.getTouchLocation();
         if (touchPoint == null) throw new AssertionError("Tried to draw selection but could not find touchPoint");
 
         DragMenuItem selectedItem = menu.getCurrent();
         if (selectedItem == null) throw new AssertionError("Tried to draw selection but nothing is selected");
         Drawable selectedIcon = icons.get(selectedItem.getName());
 
-        Point iconCenter = new Point(canvas.getWidth()/2, 3*canvas.getHeight()/4);
+        Point iconCenter = dragStartPoint;
         List<GestureManager.Gesture> gestureHistory = gestureManager.getGestureHistory();
 
         if (!gestureHistory.isEmpty()) {
@@ -166,11 +167,11 @@ public class DragView extends View {
             switch (lastGesture.direction) {
                 case north:
                 case south:
-                    iconCenter.set(lastGesture.startPosition.x, touchPoint.y);
+                    iconCenter = new Point(lastGesture.startPosition.x, touchPoint.y);
                     break;
                 case east:
                 case west:
-                    iconCenter.set(touchPoint.x, lastGesture.startPosition.y);
+                    iconCenter = new Point(touchPoint.x, lastGesture.startPosition.y);
                     break;
             }
         }
