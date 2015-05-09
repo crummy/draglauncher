@@ -8,6 +8,7 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
@@ -22,7 +23,7 @@ import java.util.Map;
  * TODO: Split this off into multiple subviews
  * Created by Malcolm on 4/19/2015.
  */
-public class DragView extends View {
+public class DragView extends View implements GestureListener {
 
     private final GestureManager gestureManager;
     private final Point dragStartPoint;
@@ -55,6 +56,7 @@ public class DragView extends View {
 
         gestureManager = new GestureManager(dragStartPoint);
         gestureManager.addListener(menu);
+        gestureManager.addListener(this);
 
         gesturePaint.setColor(Color.WHITE);
         gesturePointPaint.setColor(Color.RED);
@@ -153,7 +155,7 @@ public class DragView extends View {
 
     private float iconZoom() {
         long nanoSeconds = menu.nanosecondsSinceSelection();
-        int animBeginMultiplier = 2;
+        int animBeginMultiplier = 3;
         int animDoneMultiplier = 1;
         int msSinceLastFrame = (int)(nanoSeconds / 1000000);
         float animationMs = 100;
@@ -233,4 +235,21 @@ public class DragView extends View {
         }
     }
 
+    @Override
+    public void gestureStarted() {
+
+    }
+
+    @Override
+    public void gestureChanged(GestureManager.Direction direction) {
+        if (menu.getCurrent() != null) {
+            Vibrator v = (Vibrator)getContext().getSystemService(Context.VIBRATOR_SERVICE);
+            v.vibrate(25);
+        }
+    }
+
+    @Override
+    public void gestureFinished() {
+
+    }
 }
