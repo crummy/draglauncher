@@ -13,8 +13,6 @@ import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
 
-import org.apache.http.MethodNotSupportedException;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +27,9 @@ public class DragView extends View {
     private final GestureManager gestureManager;
     private final Point dragStartPoint;
     private final Paint gesturePaint = new Paint();
-    private final Paint touchPaint = new Paint();
+    private final Paint gesturePointPaint = new Paint();
+    private final Paint itemSquarePaint = new Paint();
+    private final Paint childSquarePaint = new Paint();
     private Drawable launcherIcon;
     private DragMenu menu;
     private Map<String, Drawable> icons = new HashMap<>();
@@ -57,8 +57,9 @@ public class DragView extends View {
         gestureManager.addListener(menu);
 
         gesturePaint.setColor(Color.WHITE);
-        touchPaint.setColor(Color.RED);
-        touchPaint.setStrokeWidth(2);
+        gesturePointPaint.setColor(Color.RED);
+        itemSquarePaint.setColor(Color.WHITE);
+        childSquarePaint.setColor(Color.GRAY);
 
         try {
             launcherIcon = context.getPackageManager().getApplicationIcon("com.malcolmcrum.draglauncher");
@@ -100,13 +101,6 @@ public class DragView extends View {
     private void drawGestureRects(Canvas canvas) {
         List<GestureManager.Gesture> history = gestureManager.getGestureHistory();
 
-        // draw squares for each gesture. debug purposes only
-        int size = 8;
-        for (GestureManager.Gesture gesture : history) {
-            Rect rect = new Rect(gesture.startPosition.x - size, gesture.startPosition.y - size, gesture.startPosition.x + size, gesture.startPosition.y + size);
-            canvas.drawRect(rect, touchPaint);
-        }
-
         // draw previous gestures
         for (int gestureIndex = 0; gestureIndex < history.size() - 1; ++gestureIndex) {
             GestureManager.Gesture gesture = history.get(gestureIndex);
@@ -120,6 +114,13 @@ public class DragView extends View {
             GestureManager.Gesture lastGesture = history.get(history.size() - 1);
             Rect rect = rectBetweenPoints(lastGesture.startPosition, gestureManager.getTouchLocation(), lastGesture.direction);
             canvas.drawRect(rect, gesturePaint);
+        }
+
+        // draw squares for each gesture. debug purposes only
+        int size = 8;
+        for (GestureManager.Gesture gesture : history) {
+            Rect rect = new Rect(gesture.startPosition.x - size, gesture.startPosition.y - size, gesture.startPosition.x + size, gesture.startPosition.y + size);
+            canvas.drawRect(rect, gesturePointPaint);
         }
     }
 
@@ -147,7 +148,7 @@ public class DragView extends View {
     }
 
     private void drawAppIcon(Canvas canvas) {
-        drawIcon(launcherIcon, dragStartPoint.x, dragStartPoint.y, iconSize, canvas);
+        drawIcon(launcherIcon, dragStartPoint.x, dragStartPoint.y, iconSize, canvas, itemSquarePaint);
     }
 
     private void drawCurrentSelection(Canvas canvas) {
@@ -176,38 +177,39 @@ public class DragView extends View {
             }
         }
 
-        drawIcon(selectedIcon, iconCenter.x, iconCenter.y, iconSize, canvas);
+        drawIcon(selectedIcon, iconCenter.x, iconCenter.y, iconSize, canvas, itemSquarePaint);
 
         DragMenuItem northChild = selectedItem.getChild(GestureManager.Direction.north);
         if (northChild != null) {
             Drawable northIcon = icons.get(northChild.getName());
-            drawIcon(northIcon, iconCenter.x, iconCenter.y - childIconDistance, childIconSize, canvas);
+            drawIcon(northIcon, iconCenter.x, iconCenter.y - childIconDistance, childIconSize, canvas, childSquarePaint);
         }
 
         DragMenuItem southChild = selectedItem.getChild(GestureManager.Direction.south);
         if (southChild != null) {
             Drawable southIcon = icons.get(southChild.getName());
-            drawIcon(southIcon, iconCenter.x, iconCenter.y + childIconDistance, childIconSize, canvas);
+            drawIcon(southIcon, iconCenter.x, iconCenter.y + childIconDistance, childIconSize, canvas, childSquarePaint);
         }
 
         DragMenuItem westChild = selectedItem.getChild(GestureManager.Direction.west);
         if (westChild != null) {
             Drawable westIcon = icons.get(westChild.getName());
-            drawIcon(westIcon, iconCenter.x - childIconDistance, iconCenter.y, childIconSize, canvas);
+            drawIcon(westIcon, iconCenter.x - childIconDistance, iconCenter.y, childIconSize, canvas, childSquarePaint);
         }
 
         DragMenuItem eastChild = selectedItem.getChild(GestureManager.Direction.east);
         if (eastChild != null) {
             Drawable eastIcon = icons.get(eastChild.getName());
-            drawIcon(eastIcon, iconCenter.x + childIconDistance, iconCenter.y, childIconSize, canvas);
+            drawIcon(eastIcon, iconCenter.x + childIconDistance, iconCenter.y, childIconSize, canvas, childSquarePaint);
         }
     }
 
     // Simple helper function - returns a square of a given size centered on a point.
-    private void drawIcon(Drawable icon, int x, int y, int size, Canvas canvas) {
+    private void drawIcon(Drawable icon, int x, int y, int size, Canvas canvas, Paint paint) {
         if (icon == null) return;
 
         Rect rect = new Rect(x - size/2, y - size/2, x + size/2, y + size/2);
+        canvas.drawRect(rect, paint);
         icon.setBounds(rect);
         icon.draw(canvas);
     }
