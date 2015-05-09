@@ -31,11 +31,11 @@ public class DragView extends View {
     private final Paint itemSquarePaint = new Paint();
     private final Paint childSquarePaint = new Paint();
     private Drawable launcherIcon;
-    private DragMenu menu;
-    private Map<String, Drawable> icons = new HashMap<>();
-    private int iconSize = 256; // TODO: Make this dependent on screen size
-    private int childIconSize = 128; // TODO: Make this dependent on screen size
-    private int childIconDistance = 256; // TODO: Make this dependent on screen size
+    private final DragMenu menu;
+    private final Map<String, Drawable> icons = new HashMap<>();
+    private final int iconSize = 256; // TODO: Make this dependent on screen size
+    private final int childIconSize = 128; // TODO: Make this dependent on screen size
+    private final int childIconDistance = 256; // TODO: Make this dependent on screen size
 
     public DragView(Context context) {
         // TODO: This constructor should never be used, but triggers a warning if it's missing. Fix?
@@ -151,6 +151,20 @@ public class DragView extends View {
         drawIcon(launcherIcon, dragStartPoint.x, dragStartPoint.y, iconSize, canvas, itemSquarePaint);
     }
 
+    private float iconZoom() {
+        long nanoSeconds = menu.nanosecondsSinceSelection();
+        int animBeginMultiplier = 2;
+        int animDoneMultiplier = 1;
+        int msSinceLastFrame = (int)(nanoSeconds / 1000000);
+        float animationMs = 100;
+        if (msSinceLastFrame > animationMs) {
+            return animDoneMultiplier;
+        } else {
+            return (animationMs - msSinceLastFrame)/animationMs * animBeginMultiplier;
+        }
+
+    }
+
     private void drawCurrentSelection(Canvas canvas) {
         Point touchPoint = gestureManager.getTouchLocation();
         if (touchPoint == null) throw new AssertionError("Tried to draw selection but could not find touchPoint");
@@ -177,7 +191,8 @@ public class DragView extends View {
             }
         }
 
-        drawIcon(selectedIcon, iconCenter.x, iconCenter.y, iconSize, canvas, itemSquarePaint);
+        int size = (int)(iconSize * iconZoom());
+        drawIcon(selectedIcon, iconCenter.x, iconCenter.y, size, canvas, itemSquarePaint);
 
         DragMenuItem northChild = selectedItem.getChild(GestureManager.Direction.north);
         if (northChild != null) {

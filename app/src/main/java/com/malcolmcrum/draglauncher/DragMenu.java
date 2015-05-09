@@ -7,6 +7,7 @@ package com.malcolmcrum.draglauncher;
 public class DragMenu implements GestureListener {
     private DragMenuRoot rootItem;
     private DragMenuItem currentItem;
+    private long selectedTime;
 
     public DragMenu() {
         initializeDefaultMenu();
@@ -28,6 +29,7 @@ public class DragMenu implements GestureListener {
         if (currentItem != null) {
             currentItem = currentItem.getChild(direction);
         }
+        selectedTime = System.nanoTime();
     }
 
     public void gestureFinished() {
@@ -35,6 +37,10 @@ public class DragMenu implements GestureListener {
             currentItem.selectItem(); // TODO: I feel like this should be in the controller?
             currentItem = null;
         }
+    }
+
+    public long nanosecondsSinceSelection() {
+        return System.nanoTime() - selectedTime;
     }
 
     private void initializeDefaultMenu() {
