@@ -160,7 +160,8 @@ public class DragView extends View {
         if (msSinceLastFrame > animationMs) {
             return animDoneMultiplier;
         } else {
-            return (animationMs - msSinceLastFrame)/animationMs * animBeginMultiplier;
+            float percentDone = (animationMs - msSinceLastFrame)/animationMs;
+            return (animBeginMultiplier - animDoneMultiplier) * percentDone + animDoneMultiplier;
         }
 
     }
@@ -191,8 +192,9 @@ public class DragView extends View {
             }
         }
 
+        drawIcon(null, iconCenter.x, iconCenter.y, iconSize, canvas, itemSquarePaint); // draw selected icon background
         int size = (int)(iconSize * iconZoom());
-        drawIcon(selectedIcon, iconCenter.x, iconCenter.y, size, canvas, itemSquarePaint);
+        drawIcon(selectedIcon, iconCenter.x, iconCenter.y, size, canvas, null); // draw selected icon, bigger size if necessary
 
         DragMenuItem northChild = selectedItem.getChild(GestureManager.Direction.north);
         if (northChild != null) {
@@ -221,12 +223,14 @@ public class DragView extends View {
 
     // Simple helper function - returns a square of a given size centered on a point.
     private void drawIcon(Drawable icon, int x, int y, int size, Canvas canvas, Paint paint) {
-        if (icon == null) return;
-
         Rect rect = new Rect(x - size/2, y - size/2, x + size/2, y + size/2);
-        canvas.drawRect(rect, paint);
-        icon.setBounds(rect);
-        icon.draw(canvas);
+        if (paint != null) {
+            canvas.drawRect(rect, paint);
+        }
+        if (icon != null) {
+            icon.setBounds(rect);
+            icon.draw(canvas);
+        }
     }
 
 }
