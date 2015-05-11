@@ -2,6 +2,7 @@ package com.malcolmcrum.draglauncher;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.widget.Toast;
@@ -45,6 +46,10 @@ public class DragLauncher extends Activity implements MenuListener {
         Toast toast = Toast.makeText(this, item.getName(), Toast.LENGTH_SHORT);
         toast.show();
         item.selectItem();
+        if (item == menu.getSettings()) {
+            Intent intent = new Intent(this, Settings.class);
+            startActivity(intent);
+        }
     }
 
     @Override

@@ -74,4 +74,16 @@ public class DragMenu implements GestureListener {
         rootItem.getChild(GestureManager.Direction.north)
                 .setChild(GestureManager.Direction.west, "com.google.android.apps.inbox");
     }
+
+    public DragMenuItem getSettings() {
+        return rootItem.getChild(GestureManager.Direction.south).getChild(GestureManager.Direction.east);
+    }
+
+    public DragMenuItem getUnlock() {
+        return rootItem.getChild(GestureManager.Direction.south);
+    }
+
+    public DragMenuItem getEdit() {
+        return rootItem.getChild(GestureManager.Direction.south).getChild(GestureManager.Direction.west);
+    }
 }
