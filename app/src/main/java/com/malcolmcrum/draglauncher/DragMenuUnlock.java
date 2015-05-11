@@ -41,7 +41,7 @@ public class DragMenuUnlock implements DragMenuItem {
     }
 
     public String getName() {
-        return "Unlock";
+        return name;
     }
 
     public boolean isEditable() {

@@ -8,8 +8,8 @@ import android.widget.Toast;
 
 public class DragLauncher extends Activity implements MenuListener {
 
-    DragMenu menu;
-    DragView dragView;
+    private DragMenu menu;
+    private DragView dragView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
