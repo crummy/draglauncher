@@ -21,6 +21,8 @@ public class DragLauncher extends Activity implements MenuListener {
         dragView = new DragView(this, menu);
         setContentView(dragView);
         loadIcons(menu.getRoot());
+        dragView.loadIcon("Root", R.drawable.four_way_arrow);
+        dragView.loadIcon("Unlock", R.drawable.unlock);
     }
 
     private void loadIcons(DragMenuItem item) {

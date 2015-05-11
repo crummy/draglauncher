@@ -50,12 +50,6 @@ public class DragView extends View {
         gesturePointPaint.setColor(Color.RED);
         itemSquarePaint.setColor(Color.WHITE);
         childSquarePaint.setColor(Color.GRAY);
-
-        try {
-            launcherIcon = context.getPackageManager().getApplicationIcon("com.malcolmcrum.draglauncher");
-        } catch (PackageManager.NameNotFoundException e) {
-            launcherIcon = null;
-        }
     }
 
     @Override
@@ -80,11 +74,15 @@ public class DragView extends View {
         return handledGesture;
     }
 
+    public void loadIcon(String name, int id) {
+        icons.put(name, getResources().getDrawable(id));
+    }
+
     public void loadIcon(String name) {
         try {
             icons.put(name, getContext().getPackageManager().getApplicationIcon(name));
         } catch (PackageManager.NameNotFoundException e) {
-            icons.put(name, null);
+            // not a real app name
         }
     }
 
@@ -139,6 +137,9 @@ public class DragView extends View {
 
     private void drawAppIcon(Canvas canvas) {
         int iconSize = getResources().getDimensionPixelSize(R.dimen.big_icon_size);
+        if (launcherIcon == null) {
+            launcherIcon = icons.get(menu.getRoot().getName());
+        }
         drawIcon(launcherIcon, dragStartPoint.x, dragStartPoint.y, iconSize, canvas, itemSquarePaint);
     }
 
