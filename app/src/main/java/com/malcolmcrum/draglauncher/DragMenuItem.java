@@ -7,6 +7,6 @@ package com.malcolmcrum.draglauncher;
 public interface DragMenuItem {
     DragMenuItem getChild(GestureManager.Direction direction);
     DragMenuItem setChild(GestureManager.Direction direction, String name);
-    void selectItem();
+    void selectItem(); // TODO: Consider what logic goes in here - remove entirely?
     String getName();
 }

@@ -8,7 +8,6 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
@@ -23,7 +22,7 @@ import java.util.Map;
  * TODO: Split this off into multiple subviews
  * Created by Malcolm on 4/19/2015.
  */
-public class DragView extends View implements GestureListener {
+public class DragView extends View {
 
     private final GestureManager gestureManager;
     private final Point dragStartPoint;
@@ -38,13 +37,6 @@ public class DragView extends View implements GestureListener {
     private final int childIconSize = 128; // TODO: Make this dependent on screen size
     private final int childIconDistance = 256; // TODO: Make this dependent on screen size
 
-    public DragView(Context context) {
-        // TODO: This constructor should never be used, but triggers a warning if it's missing. Fix?
-        super(context);
-        this.gestureManager = new GestureManager(new Point(0,0));
-        throw new AssertionError("Calling an unused constructor");
-    }
-
     public DragView(DragLauncher context, DragMenu menu) {
         super(context);
 
@@ -56,9 +48,8 @@ public class DragView extends View implements GestureListener {
 
         gestureManager = new GestureManager(dragStartPoint);
         gestureManager.addListener(menu);
-        gestureManager.addListener(this);
 
-        gesturePaint.setColor(Color.WHITE);
+        gesturePaint.setColor(Color.LTGRAY);
         gesturePointPaint.setColor(Color.RED);
         itemSquarePaint.setColor(Color.WHITE);
         childSquarePaint.setColor(Color.GRAY);
@@ -162,6 +153,7 @@ public class DragView extends View implements GestureListener {
         if (msSinceLastFrame > animationMs) {
             return animDoneMultiplier;
         } else {
+            invalidate();
             float percentDone = (animationMs - msSinceLastFrame)/animationMs;
             return (animBeginMultiplier - animDoneMultiplier) * percentDone + animDoneMultiplier;
         }
@@ -235,21 +227,12 @@ public class DragView extends View implements GestureListener {
         }
     }
 
-    @Override
-    public void gestureStarted() {
-
+    // This constructor is never used, but triggers a warning if missing, so it's left in but
+    // throws an assertion.
+    public DragView(Context context) {
+        super(context);
+        this.gestureManager = new GestureManager(new Point(0,0));
+        throw new AssertionError("Calling an unused constructor");
     }
 
-    @Override
-    public void gestureChanged(GestureManager.Direction direction) {
-        if (menu.getCurrent() != null) {
-            Vibrator v = (Vibrator)getContext().getSystemService(Context.VIBRATOR_SERVICE);
-            v.vibrate(25);
-        }
-    }
-
-    @Override
-    public void gestureFinished() {
-
-    }
 }

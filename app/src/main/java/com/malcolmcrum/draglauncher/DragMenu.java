@@ -1,5 +1,8 @@
 package com.malcolmcrum.draglauncher;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Drag Menu manager.
  * Created by Malcolm on 4/29/2015.
@@ -8,9 +11,14 @@ public class DragMenu implements GestureListener {
     private DragMenuRoot rootItem;
     private DragMenuItem currentItem;
     private long selectedTime;
+    private List<MenuListener> listeners = new ArrayList<>();
 
     public DragMenu() {
         initializeDefaultMenu();
+    }
+
+    public void addListener(MenuListener listener) {
+        listeners.add(listener);
     }
 
     public DragMenuItem getCurrent() {
@@ -28,13 +36,20 @@ public class DragMenu implements GestureListener {
     public void gestureChanged(GestureManager.Direction direction) {
         if (currentItem != null) {
             currentItem = currentItem.getChild(direction);
+            if (currentItem != null) {
+                for (MenuListener listener : listeners) {
+                    listener.gestureChanged();
+                }
+            }
         }
         selectedTime = System.nanoTime();
     }
 
     public void gestureFinished() {
         if (currentItem != null) {
-            currentItem.selectItem(); // TODO: I feel like this should be in the controller?
+            for (MenuListener listener : listeners) {
+                listener.itemSelected(currentItem);
+            }
             currentItem = null;
         }
     }
