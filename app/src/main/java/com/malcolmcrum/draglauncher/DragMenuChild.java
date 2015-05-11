@@ -1,7 +1,5 @@
 package com.malcolmcrum.draglauncher;
 
-import android.gesture.Gesture;
-
 /**
  * Child of a DragMenuItem.
  * A DragMenuChild may only have two children - out to the sides of the gesture. As a result,

@@ -6,9 +6,6 @@ import android.os.Bundle;
 import android.os.Vibrator;
 import android.widget.Toast;
 
-import junit.framework.Assert;
-
-
 public class DragLauncher extends Activity implements MenuListener {
 
     DragMenu menu;
@@ -49,6 +46,7 @@ public class DragLauncher extends Activity implements MenuListener {
     @Override
     public void gestureChanged() {
         Vibrator vibe = (Vibrator)this.getSystemService(Context.VIBRATOR_SERVICE);
-        vibe.vibrate(20);
+        int vibrateDurationMs = getResources().getInteger(R.integer.highlight_vibrate_ms);
+        vibe.vibrate(vibrateDurationMs);
     }
 }

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="highlight_zoom_ms">100</integer>
+    <integer name="highlight_vibrate_ms">20</integer>
+</resources>

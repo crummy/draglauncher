@@ -33,9 +33,6 @@ public class DragView extends View {
     private Drawable launcherIcon;
     private final DragMenu menu;
     private final Map<String, Drawable> icons = new HashMap<>();
-    private final int iconSize = 256; // TODO: Make this dependent on screen size
-    private final int childIconSize = 128; // TODO: Make this dependent on screen size
-    private final int childIconDistance = 256; // TODO: Make this dependent on screen size
 
     public DragView(DragLauncher context, DragMenu menu) {
         super(context);
@@ -46,7 +43,7 @@ public class DragView extends View {
         context.getWindowManager().getDefaultDisplay().getMetrics(dm);
         dragStartPoint = new Point(dm.widthPixels/2, 2*dm.heightPixels/3);
 
-        gestureManager = new GestureManager(dragStartPoint);
+        gestureManager = new GestureManager(dragStartPoint, getResources());
         gestureManager.addListener(menu);
 
         gesturePaint.setColor(Color.LTGRAY);
@@ -141,6 +138,7 @@ public class DragView extends View {
     }
 
     private void drawAppIcon(Canvas canvas) {
+        int iconSize = getResources().getDimensionPixelSize(R.dimen.big_icon_size);
         drawIcon(launcherIcon, dragStartPoint.x, dragStartPoint.y, iconSize, canvas, itemSquarePaint);
     }
 
@@ -149,7 +147,7 @@ public class DragView extends View {
         int animBeginMultiplier = 3;
         int animDoneMultiplier = 1;
         int msSinceLastFrame = (int)(nanoSeconds / 1000000);
-        float animationMs = 100;
+        float animationMs = getResources().getInteger(R.integer.highlight_zoom_ms);
         if (msSinceLastFrame > animationMs) {
             return animDoneMultiplier;
         } else {
@@ -186,9 +184,13 @@ public class DragView extends View {
             }
         }
 
+        int iconSize = getResources().getDimensionPixelSize(R.dimen.big_icon_size);
         drawIcon(null, iconCenter.x, iconCenter.y, iconSize, canvas, itemSquarePaint); // draw selected icon background
         int size = (int)(iconSize * iconZoom());
         drawIcon(selectedIcon, iconCenter.x, iconCenter.y, size, canvas, null); // draw selected icon, bigger size if necessary
+
+        int childIconDistance = getResources().getDimensionPixelSize(R.dimen.small_icon_distance);
+        int childIconSize = getResources().getDimensionPixelSize(R.dimen.small_icon_size);
 
         DragMenuItem northChild = selectedItem.getChild(GestureManager.Direction.north);
         if (northChild != null) {
@@ -231,7 +233,7 @@ public class DragView extends View {
     // throws an assertion.
     public DragView(Context context) {
         super(context);
-        this.gestureManager = new GestureManager(new Point(0,0));
+        this.gestureManager = new GestureManager(new Point(0,0), getResources());
         throw new AssertionError("Calling an unused constructor");
     }
 

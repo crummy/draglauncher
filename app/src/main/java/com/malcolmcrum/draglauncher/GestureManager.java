@@ -1,5 +1,6 @@
 package com.malcolmcrum.draglauncher;
 
+import android.content.res.Resources;
 import android.graphics.Point;
 import android.view.MotionEvent;
 
@@ -26,10 +27,12 @@ public class GestureManager {
 
     private final List<GestureListener> listeners = new ArrayList<>();
     private final List<Gesture> gestureHistory = new ArrayList<>();
-    private final int minGestureDetectionDistance = 64; // TODO: Make this resolution independent
 
-    public GestureManager(Point gestureOriginPoint) {
+    private Resources resources;
+
+    public GestureManager(Point gestureOriginPoint, Resources resources) {
         this.gestureStartPoint = gestureOriginPoint;
+        this.resources = resources;
     }
 
     public boolean handleInput(MotionEvent input) {
@@ -91,6 +94,7 @@ public class GestureManager {
         Direction newDirection = direction(lastTouchPosition, touchPosition);
 
         boolean isFirstGesture = gestureHistory.isEmpty();
+        int minGestureDetectionDistance = resources.getDimensionPixelSize(R.dimen.min_gesture_detection_distance);
         if (isFirstGesture) {
 
             boolean movedFarEnough = (Math.abs(touchPosition.x - gestureStartPoint.x) > minGestureDetectionDistance
