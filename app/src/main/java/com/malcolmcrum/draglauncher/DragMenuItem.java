@@ -9,4 +9,5 @@ public interface DragMenuItem {
     DragMenuItem setChild(GestureManager.Direction direction, String name);
     void selectItem(); // TODO: Consider what logic goes in here - remove entirely?
     String getName();
+    boolean isEditable();
 }

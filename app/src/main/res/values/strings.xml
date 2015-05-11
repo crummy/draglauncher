@@ -3,4 +3,10 @@
 
     <string name="clock_hour_mins">4:20</string>
     <string name="action_settings">Settings</string>
+
+    <!-- Default DragMenuItem names -->
+    <string name="item_root">Root</string>
+    <string name="item_unlock">Unlock</string>
+    <string name="item_settings">Settings</string>
+    <string name="item_edit">Edit</string>
 </resources>

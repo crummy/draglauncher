@@ -20,6 +20,7 @@ import java.util.Map;
 /**
  * Canvas for drawing launcher. Input handed off to GestureManager
  * TODO: Split this off into multiple subviews
+ * TODO: Get at least some layout data from XML (e.g. root icon position)
  * Created by Malcolm on 4/19/2015.
  */
 public class DragView extends View {

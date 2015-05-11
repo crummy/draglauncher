@@ -1,5 +1,7 @@
 package com.malcolmcrum.draglauncher;
 
+import android.content.res.Resources;
+
 /**
  * Menu object
  * Created by Malcolm Crum on 3/22/2015.
@@ -8,10 +10,12 @@ public class DragMenuRoot implements DragMenuItem {
     private DragMenuChild north;
     private DragMenuChild east;
     private DragMenuChild west;
-    private DragMenuUnlock unlock;
+    private final DragMenuUnlock unlock;
+    private final String name;
 
-    public DragMenuRoot() {
-        unlock = new DragMenuUnlock();
+    public DragMenuRoot(Resources resources) {
+        name = resources.getString(R.string.item_root);
+        unlock = new DragMenuUnlock(resources);
     }
 
     public DragMenuItem getChild(GestureManager.Direction direction) {
@@ -58,7 +62,11 @@ public class DragMenuRoot implements DragMenuItem {
     }
 
     public String getName() {
-        return "Root";
+        return name;
+    }
+
+    public boolean isEditable() {
+        return false;
     }
 
 }

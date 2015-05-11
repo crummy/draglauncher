@@ -1,5 +1,7 @@
 package com.malcolmcrum.draglauncher;
 
+import android.content.res.Resources;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,8 +15,8 @@ public class DragMenu implements GestureListener {
     private long selectedTime;
     private List<MenuListener> listeners = new ArrayList<>();
 
-    public DragMenu() {
-        initializeDefaultMenu();
+    public DragMenu(Resources resources) {
+        initializeDefaultMenu(resources);
     }
 
     public void addListener(MenuListener listener) {
@@ -58,8 +60,8 @@ public class DragMenu implements GestureListener {
         return System.nanoTime() - selectedTime;
     }
 
-    private void initializeDefaultMenu() {
-        rootItem = new DragMenuRoot();
+    private void initializeDefaultMenu(Resources resources) {
+        rootItem = new DragMenuRoot(resources);
         rootItem.setChild(GestureManager.Direction.east, "com.htc.camera");
         rootItem.setChild(GestureManager.Direction.west, "com.google.android.music")
                 .setChild(GestureManager.Direction.north, "com.sonos.acr");

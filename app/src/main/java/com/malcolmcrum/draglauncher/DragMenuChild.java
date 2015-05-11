@@ -9,6 +9,7 @@ package com.malcolmcrum.draglauncher;
  * Created by Malcolm on 4/27/2015.
  */
 public class DragMenuChild implements DragMenuItem {
+    protected boolean isEditable = false;
     private DragMenuChild left;
     private DragMenuChild right;
     private String packageName;
@@ -55,5 +56,9 @@ public class DragMenuChild implements DragMenuItem {
 
     public String getName() {
         return packageName;
+    }
+
+    public boolean isEditable() {
+        return isEditable;
     }
 }

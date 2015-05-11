@@ -15,14 +15,16 @@ public class DragLauncher extends Activity implements MenuListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        menu = new DragMenu();
+        menu = new DragMenu(getResources());
         menu.addListener(this);
 
         dragView = new DragView(this, menu);
         setContentView(dragView);
         loadIcons(menu.getRoot());
-        dragView.loadIcon("Root", R.drawable.four_way_arrow);
-        dragView.loadIcon("Unlock", R.drawable.unlock);
+        dragView.loadIcon(getResources().getString(R.string.item_root), R.drawable.four_way_arrow);
+        dragView.loadIcon(getResources().getString(R.string.item_unlock), R.drawable.unlock);
+        dragView.loadIcon(getResources().getString(R.string.item_edit), R.drawable.edit);
+        dragView.loadIcon(getResources().getString(R.string.item_settings), R.drawable.settings);
     }
 
     private void loadIcons(DragMenuItem item) {
